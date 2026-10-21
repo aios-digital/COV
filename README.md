@@ -5,6 +5,8 @@ An agent skill for **Claude Code** and **Codex** (and any agent that reads `SKIL
 - **Customer onboarding videos:** turns a web app or module into a customer-ready, narrated, subtitled walkthrough video.
 - **Plain text to speech:** type or paste any text and get an MP3 file, offline and free, from the dashboard or the command line.
 
+![Customer Onboarding with TTS: scan a web app, approve the plan, and get a narrated, subtitled onboarding video](docs/images/social-preview.png)
+
 Full installation steps for Claude Code and Codex are in **[INSTALL.md](INSTALL.md)**.
 
 <picture>
