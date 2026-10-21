@@ -49,7 +49,10 @@ h1{margin:0;font-size:22px;letter-spacing:-.01em}
 .stat span{color:var(--mute);font-size:13px}
 
 /* controls */
-.controls{position:sticky;top:0;z-index:6;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.tabbar{position:sticky;top:0;z-index:7;background:var(--surface);border-bottom:1px solid var(--line);height:48px}
+.tabbar .tabs{border-bottom:0;margin:0;height:48px}
+.tabbar .tab{height:48px}
+.controls{position:sticky;top:48px;z-index:6;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .crow{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;padding:12px 0}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-size:12px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
@@ -152,12 +155,14 @@ input[type=range]{width:170px;accent-color:var(--brand)}
       <div class="stat"><b id="stLocales">0</b><span>regional variants</span></div>
       <div class="stat"><b id="stInstalled">0</b><span>installed on this computer</span></div>
     </div>
-    <div class="tabs" role="tablist" aria-label="Sections">
-      <button class="tab" role="tab" id="tabVoices" aria-selected="true" aria-controls="voicesView" type="button">Choose the narrator</button>
-      <button class="tab" role="tab" id="tabStudio" aria-selected="false" aria-controls="studioView" type="button">Text to speech</button>
-    </div>
+
   </div>
 </header>
+
+<nav class="tabbar"><div class="wrap"><div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tabVoices" aria-selected="true" aria-controls="voicesView" type="button">Choose the narrator</button>
+      <button class="tab" role="tab" id="tabStudio" aria-selected="false" aria-controls="studioView" type="button">Text to speech</button>
+    </div></div></nav>
 
 <div class="controls" id="voicesControls">
   <div class="wrap crow">
@@ -178,9 +183,17 @@ input[type=range]{width:170px;accent-color:var(--brand)}
 <main class="wrap" id="voicesView">
   <section class="panel chosen" id="chosen" aria-label="Current narrator"></section>
   <section class="panel">
-    <h2><label for="text">Text read by "Try with my script"</label></h2>
-    <p class="hint">Starts with the first lines of your narration. Edit it to hear any sentence.</p>
+    <h2><label for="text">Type text, play it and download it</label></h2>
+    <p class="hint">Starts with the first lines of your narration. Edit it to anything you like. The buttons on each voice card read this text with that voice; the buttons below use your current narrator.</p>
     <textarea id="text" maxlength="600"></textarea>
+    <div class="sfoot">
+      <button class="btn primary" id="pGo" type="button">Play with current narrator</button>
+      <a class="btn" id="pDownload" hidden>Download</a>
+      <button class="btn" id="pDesktop" type="button" hidden>Save to Desktop</button>
+      <a class="hint" href="#" id="moreTts">Longer text, any voice, MP3: open the Text to speech tab</a>
+    </div>
+    <audio class="player" id="pAudio" controls hidden></audio>
+    <div class="note" id="pNote" role="status"></div>
   </section>
   <div class="grid" id="grid" role="list"></div>
 </main>
@@ -351,37 +364,45 @@ function fillStudioVoices() {
   sel.appendChild(rest);
   sel.value = keep;
 }
-function studioArgs() { return { key: $('#sVoice').value, text: $('#sText').value, lengthScale: $('#speed').value, format: $('#sFormat').value }; }
-function studioBusy(on, text) { $('#sGo').disabled = on; $('#sDesktop').disabled = on; $('#sNote').className = 'note'; $('#sNote').textContent = text || ''; }
+function bindSpeech(o) {
+  let url = null;
+  const q = (id) => document.getElementById(id);
+  const say = (cls, t) => { q(o.note).className = cls; q(o.note).textContent = t || ''; };
+  const busy = (on, t) => { q(o.go).disabled = on; q(o.desktop).disabled = on; say('note', t); };
+  const args = () => ({ key: o.key(), text: q(o.text).value, lengthScale: $('#speed').value, format: o.format() });
+  q(o.go).onclick = async () => {
+    if (!q(o.text).value.trim()) { say('err', 'Type some text first.'); return; }
+    const v = S.voices.find((x) => x.key === o.key());
+    busy(true, v && !v.installed ? 'Downloading the voice (' + v.sizeMb + ' MB), one time, then generating...' : 'Generating speech...');
+    try {
+      const r = await api('/api/tts', args()); const name = r.headers.get('X-File-Name') || 'speech.wav'; const blob = await r.blob();
+      if (url) URL.revokeObjectURL(url);
+      url = URL.createObjectURL(blob);
+      const a = q(o.audio); a.src = url; a.hidden = false; a.play().catch(() => {});
+      const d = q(o.download); d.href = url; d.download = name; d.textContent = 'Download ' + name.split('.').pop().toUpperCase(); d.hidden = false;
+      q(o.desktop).hidden = false;
+      if (v) { v.installed = true; drawStats(); }
+      busy(false, 'Ready: press play, download it, or save it to your Desktop.');
+    } catch (e) { busy(false); say('err', 'Could not generate: ' + e.message); }
+  };
+  q(o.desktop).onclick = async () => {
+    busy(true, 'Saving to your Desktop...');
+    try { const r = await (await api('/api/save-desktop', args())).json(); busy(false); say('saved', 'Saved to ' + r.saved); }
+    catch (e) { busy(false); say('err', 'Could not save: ' + e.message); }
+  };
+}
 $('#sText').addEventListener('input', () => { $('#sCount').textContent = $('#sText').value.length + ' / 5000'; });
-$('#sGo').onclick = async () => {
-  if (!$('#sText').value.trim()) { $('#sNote').className = 'err'; $('#sNote').textContent = 'Type some text first.'; return; }
-  const v = S.voices.find((x) => x.key === $('#sVoice').value);
-  studioBusy(true, v && !v.installed ? 'Downloading the voice (' + v.sizeMb + ' MB), one time, then generating...' : 'Generating speech...');
-  try {
-    const r = await api('/api/tts', studioArgs()); const name = r.headers.get('X-File-Name') || 'speech.wav'; const blob = await r.blob();
-    if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
-    lastBlobUrl = URL.createObjectURL(blob);
-    const a = $('#sAudio'); a.src = lastBlobUrl; a.hidden = false; a.play().catch(() => {});
-    const d = $('#sDownload'); d.href = lastBlobUrl; d.download = name; d.textContent = 'Download ' + name.split('.').pop().toUpperCase(); d.hidden = false;
-    $('#sDesktop').hidden = false;
-    if (v) { v.installed = true; drawStats(); }
-    studioBusy(false, 'Ready: press play, download it, or save it to your Desktop.');
-  } catch (e) { studioBusy(false); $('#sNote').className = 'err'; $('#sNote').textContent = 'Could not generate: ' + e.message; }
-};
-$('#sDesktop').onclick = async () => {
-  studioBusy(true, 'Saving to your Desktop...');
-  try { const r = await (await api('/api/save-desktop', studioArgs())).json(); studioBusy(false); $('#sNote').className = 'saved'; $('#sNote').textContent = 'Saved to ' + r.saved; }
-  catch (e) { studioBusy(false); $('#sNote').className = 'err'; $('#sNote').textContent = 'Could not save: ' + e.message; }
-};
+bindSpeech({ go: 'sGo', download: 'sDownload', desktop: 'sDesktop', audio: 'sAudio', note: 'sNote', text: 'sText', key: () => $('#sVoice').value, format: () => $('#sFormat').value });
+bindSpeech({ go: 'pGo', download: 'pDownload', desktop: 'pDesktop', audio: 'pAudio', note: 'pNote', text: 'text', key: () => cur.voice || (S.current && S.current.voice) || 'en_US-ryan-high', format: () => 'wav' });
 function showTab(name) {
   const studio = name === 'studio';
   $('#voicesView').hidden = studio; $('#voicesControls').hidden = studio; $('#studioView').hidden = !studio;
   $('#tabVoices').setAttribute('aria-selected', String(!studio)); $('#tabStudio').setAttribute('aria-selected', String(studio));
   $('#gapSlider').hidden = studio;
-  if (studio) { fillStudioVoices(); if (!$('#sText').value) { $('#sText').value = S.sampleText; $('#sCount').textContent = $('#sText').value.length + ' / 5000'; } }
+  if (studio) { fillStudioVoices(); if (!$('#sText').value) { $('#sText').value = $('#text').value || S.sampleText; $('#sCount').textContent = $('#sText').value.length + ' / 5000'; } }
 }
 $('#tabVoices').onclick = () => showTab('voices');
+$('#moreTts').onclick = (e) => { e.preventDefault(); showTab('studio'); };
 $('#tabStudio').onclick = () => showTab('studio');
 
 async function init() {
