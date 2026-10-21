@@ -1,6 +1,6 @@
 ---
 name: customer-onboarding-with-tts
-description: Create a narrated, subtitled customer onboarding or training video of any web app or module. The skill first scans the module and writes a recording plan for the user to approve, lets the user pick the narrator voice in a local dashboard, then records the walkthrough with a real browser (Playwright), an offline human-sounding text-to-speech voice (Piper), and burned-in subtitles (ffmpeg). Also works as a plain offline text-to-speech tool (dashboard tab or command line) that produces WAV or MP3 files. Use when asked to record an onboarding, tutorial, demo, training or "how it works" video, to re-record or extend one, to turn a product module into a customer-ready walkthrough, or to convert text to speech. Produces a 1920x1080 MP4 (captioned and clean), SRT/VTT files and a short report, or an audio file.
+description: Create a narrated, subtitled customer onboarding or training video of any web app or module. The skill first scans the module and writes a recording plan for the user to approve, lets the user pick the narrator voice in a local dashboard, then records the walkthrough with a real browser (Playwright), an offline human-sounding text-to-speech voice (Piper), and burned-in subtitles (ffmpeg). Also works as a plain offline text-to-speech tool (dashboard tab or command line) that produces MP3 files. Use when asked to record an onboarding, tutorial, demo, training or "how it works" video, to re-record or extend one, to turn a product module into a customer-ready walkthrough, or to convert text to speech. Produces a 1920x1080 MP4 (captioned and clean), SRT/VTT files and a short report, or an MP3 audio file.
 ---
 
 # Customer onboarding with TTS
@@ -13,8 +13,8 @@ In this file `<skill>` is the folder that contains this SKILL.md (for example `~
 `~/.codex/skills/customer-onboarding-with-tts`). All commands are Node scripts and work on Windows, macOS and Linux. Use `--config=<project>/walkthrough.config.mjs` on every engine script.
 
 ## Plain text to speech (no video)
-When the user only wants audio from text: run `node <skill>/scripts/setup.mjs` once, then either `node <skill>/scripts/engine/tts.mjs --text="..." [--voice=] [--speed=] [--format=wav|mp3] [--out=<file or folder>]` (saves to the Desktop when `--out` is omitted),
-or open the dashboard with `node <skill>/scripts/engine/voices.mjs` (run it in the background) and tell the user to use its **Text to speech** tab: they can generate, download, or save to the Desktop themselves.
+When the user only wants audio from text: run `node <skill>/scripts/setup.mjs` once, then either `node <skill>/scripts/engine/tts.mjs --text="..." [--voice=] [--speed=] [--format=mp3|wav] [--out=<file or folder>]` (MP3 by default; saved in the current folder when `--out` is omitted),
+or open the dashboard with `node <skill>/scripts/engine/voices.mjs` (run it in the background) and tell the user to use its **Text to speech** tab: they can generate, play and download the MP3 themselves.
 
 ## The gates for onboarding videos (never skip)
 1. **Scan, then plan, then approval, then record.** Never start recording until the user has read `plan.md` and said yes. `record.mjs` refuses to run without a matching approval.

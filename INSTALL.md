@@ -72,7 +72,7 @@ node "$env:USERPROFILE\.claude\skills\customer-onboarding-with-tts\scripts\setup
 
 What it does (each step is skipped when already done, so it is safe to re-run):
 
-1. Finds ffmpeg, or downloads a checksum-verified build.
+1. Finds ffmpeg (with MP3 support), or downloads a checksum-verified build.
 2. Downloads the Piper text-to-speech program for your operating system.
 3. Downloads one voice (default `en_US-ryan-high`). Pick another with `--voice=<name>` or later in the dashboard.
 4. Installs Playwright with `npm` and its small video encoder; uses Chrome if present, otherwise Chromium.
@@ -87,10 +87,10 @@ Options: `--tools=<folder>` to install elsewhere (then set the environment varia
 cd <skill folder>
 npm run check          # syntax check of every script
 npm test               # offline tests of the plan approval gate
-node scripts/engine/tts.mjs --text="Hello, this is a test." --out=./hello.wav
+node scripts/engine/tts.mjs --text="Hello, this is a test." --out=./hello.mp3
 ```
 
-If `hello.wav` plays, text to speech works. Then open the dashboard to pick your voice and try the Text to speech tab:
+If `hello.mp3` plays, text to speech works. Then open the dashboard to pick your voice and try the Text to speech tab:
 
 ```bash
 node scripts/engine/voices.mjs
@@ -98,7 +98,7 @@ node scripts/engine/voices.mjs
 
 ## 5. Two ways to use it
 
-**Text to speech on its own.** Open the dashboard (`voices.mjs`) and use the **Text to speech** tab to turn any text into a WAV or MP3, download it, or save it to your Desktop. Or use the command line: `node scripts/engine/tts.mjs --text="..." --voice=en_US-ryan-high --format=mp3`.
+**Text to speech on its own.** Open the dashboard (`voices.mjs`) and use the **Text to speech** tab to turn any text into an MP3 you can play and download. Or use the command line: `node scripts/engine/tts.mjs --text="..." --voice=en_US-ryan-high --out=./speech.mp3`.
 
 **Customer onboarding videos.** Ask your agent to record one. The agent scans the module, shows you a recording plan, waits for your approval, then records, narrates and adds subtitles. You sign in yourself; the skill never sees your password.
 

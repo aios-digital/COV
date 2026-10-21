@@ -3,7 +3,7 @@
 An agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills) with two uses:
 
 - **Customer onboarding videos:** turns a web app or module into a customer-ready, narrated, subtitled walkthrough video.
-- **Plain text to speech:** type or paste any text and get a WAV or MP3 file, offline and free, from the dashboard or the command line.
+- **Plain text to speech:** type or paste any text and get an MP3 file, offline and free, from the dashboard or the command line.
 
 Full installation steps for Claude Code and Codex are in **[INSTALL.md](INSTALL.md)**.
 
@@ -68,12 +68,12 @@ node ~/.claude/skills/customer-onboarding-with-tts/scripts/setup.mjs
 
 ```bash
 node scripts/engine/voices.mjs        # dashboard: pick a voice, then use the "Text to speech" tab
-node scripts/engine/tts.mjs --text="Hello, this is a test." --format=mp3 --out=./hello.mp3
+node scripts/engine/tts.mjs --text="Hello, this is a test." --out=./hello.mp3
 ```
 
 The dashboard has dark and light modes, shows how many voices exist per language, plays a sample of every voice, and lets you type any text
-(up to 5000 characters), generate it, then **download** the file or **save it to your Desktop**. The command line version needs no dashboard
-(`--file=script.txt`, `--voice=`, `--speed=`, `--format=wav|mp3`, `--out=`; it saves to your Desktop when `--out` is omitted).
+(up to 5000 characters), generate it, then **play** it and **download** the MP3. The command line version needs no dashboard
+(`--file=script.txt`, `--voice=`, `--speed=`, `--format=mp3|wav`, `--out=`; MP3 is the default and the file is saved in the current folder when `--out` is omitted).
 
 ## Use it with your agent
 

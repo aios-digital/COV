@@ -33,7 +33,7 @@ const cacheDir = path.join(toolsDir(), 'voice-samples'); fs.mkdirSync(cacheDir, 
 let lastHit = Date.now();
 
 
-/** Text to speech for the studio tab: WAV straight from Piper, or MP3 through ffmpeg. Returns { buf, mime, ext }. */
+/** Text to speech for the studio: MP3 through ffmpeg (default), or WAV straight from Piper. Returns { buf, mime, ext }. */
 async function render(key, text, lengthScale, format) {
   const v = voices.find((x) => x.key === key); if (!v) throw new Error('unknown voice');
   const clean = String(text || '').replace(/\r/g, '').trim().slice(0, 5000); if (!clean) throw new Error('Type some text first.');
@@ -42,13 +42,12 @@ async function render(key, text, lengthScale, format) {
   const id = crypto.randomUUID(); const wav = path.join(os.tmpdir(), `cotts-${id}.wav`); const mp3 = path.join(os.tmpdir(), `cotts-${id}.mp3`);
   try {
     synth(clean, v.key, wav, ls);
-    if (format !== 'mp3') return { buf: fs.readFileSync(wav), mime: 'audio/wav', ext: 'wav' };
+    if (format === 'wav') return { buf: fs.readFileSync(wav), mime: 'audio/wav', ext: 'wav' };
     const r = spawnSync(ffmpegBin().ffmpeg, ['-y', '-v', 'error', '-i', wav, '-codec:a', 'libmp3lame', '-q:a', '3', mp3], { encoding: 'utf8' });
-    if (r.status !== 0 || !fs.existsSync(mp3)) throw new Error('MP3 needs an ffmpeg with libmp3lame. Use WAV, or install a full ffmpeg.');
+    if (r.status !== 0 || !fs.existsSync(mp3)) throw new Error('MP3 needs an ffmpeg with libmp3lame. Install a full ffmpeg (with libmp3lame) or run scripts/setup.mjs.');
     return { buf: fs.readFileSync(mp3), mime: 'audio/mpeg', ext: 'mp3' };
   } finally { fs.rmSync(wav, { force: true }); fs.rmSync(mp3, { force: true }); }
 }
-const desktopDir = () => [process.env.OneDrive && path.join(process.env.OneDrive, 'Desktop'), path.join(os.homedir(), 'Desktop'), os.homedir()].filter(Boolean).find((d) => fs.existsSync(d));
 const fileLabel = (key, text, ext) => {
   const slug = String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').split('-').slice(0, 6).join('-') || 'speech';
   const t = new Date(); const p = (n) => String(n).padStart(2, '0');
@@ -83,12 +82,6 @@ const server = http.createServer(async (req, res) => {
       const b = JSON.parse(await readBody(req));
       const out = await render(b.key, b.text, b.lengthScale, b.format);
       res.writeHead(200, { 'Content-Type': out.mime, 'Cache-Control': 'no-store', 'X-File-Name': fileLabel(b.key, b.text, out.ext) }); return res.end(out.buf);
-    }
-    if (req.method === 'POST' && url.pathname === '/api/save-desktop') {
-      const b = JSON.parse(await readBody(req));
-      const out = await render(b.key, b.text, b.lengthScale, b.format);
-      const dest = path.join(desktopDir(), fileLabel(b.key, b.text, out.ext)); fs.writeFileSync(dest, out.buf);
-      console.log(`TTS_SAVED ${dest}`); return json(res, 200, { saved: dest });
     }
     if (req.method === 'POST' && url.pathname === '/api/choose') {
       const b = JSON.parse(await readBody(req)); const v = voices.find((x) => x.key === b.key); if (!v) return json(res, 404, { error: 'unknown voice' });

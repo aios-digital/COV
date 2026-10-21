@@ -1,7 +1,7 @@
 // One-time, idempotent installer for the tools this skill needs. Works on Windows, Linux and macOS (Node 18+).
 //   node scripts/setup.mjs [--tools=<folder>] [--voice=en_US-ryan-high] [--skip-voice]
 // Installs into the tools folder (default ~/.customer-onboarding-tts, or $ONBOARDING_TOOLS), outside any git repository:
-//   ffmpeg      system ffmpeg when it has libx264 + libass, else a BtbN build (Windows/Linux; checksum verified)   ~190 MB
+//   ffmpeg      system ffmpeg when it has libx264 + libass + libmp3lame, else a BtbN build (Windows/Linux; checksum verified)   ~190 MB
 //   Piper       rhasspy/piper 2023.11.14-2 release binary for your OS                                            ~25 MB
 //   voice       one Piper voice from Hugging Face rhasspy/piper-voices (default en_US-ryan-high)                 ~60-120 MB
 //   Playwright  npm 'playwright' + its small video encoder; uses your installed Google Chrome, else downloads Chromium
@@ -47,7 +47,7 @@ const extract = (archive, dest) => { // bsdtar ships with Windows 10+, macOS and
 function ffmpegUsable(bin) {
   const v = run(bin, ['-hide_banner', '-filters']);
   const e = run(bin, ['-hide_banner', '-encoders']);
-  return v.status === 0 && /\bsubtitles\b/.test(v.stdout) && /libx264/.test(e.stdout);
+  return v.status === 0 && /\bsubtitles\b/.test(v.stdout) && /libx264/.test(e.stdout) && /libmp3lame/.test(e.stdout);
 }
 async function setupFfmpeg() {
   const known = manifest.ffmpeg && fs.existsSync(manifest.ffmpeg) ? manifest.ffmpeg : find(path.join(TOOLS, 'ffmpeg_bin'), exe('ffmpeg'));

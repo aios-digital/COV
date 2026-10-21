@@ -184,13 +184,12 @@ input[type=range]{width:170px;accent-color:var(--brand)}
   <section class="panel chosen" id="chosen" aria-label="Current narrator"></section>
   <section class="panel">
     <h2><label for="text">Type text, play it and download it</label></h2>
-    <p class="hint">Starts with the first lines of your narration. Edit it to anything you like. The buttons on each voice card read this text with that voice; the buttons below use your current narrator.</p>
+    <p class="hint">Starts with the first lines of your narration. Edit it to anything you like. The buttons on each voice card read this text with that voice; the buttons below use your current narrator and give you an MP3.</p>
     <textarea id="text" maxlength="600"></textarea>
     <div class="sfoot">
       <button class="btn primary" id="pGo" type="button">Play with current narrator</button>
       <a class="btn" id="pDownload" hidden>Download</a>
-      <button class="btn" id="pDesktop" type="button" hidden>Save to Desktop</button>
-      <a class="hint" href="#" id="moreTts">Longer text, any voice, MP3: open the Text to speech tab</a>
+      <a class="hint" href="#" id="moreTts">Longer text or another voice: open the Text to speech tab</a>
     </div>
     <audio class="player" id="pAudio" controls hidden></audio>
     <div class="note" id="pNote" role="status"></div>
@@ -201,17 +200,15 @@ input[type=range]{width:170px;accent-color:var(--brand)}
 <main class="wrap" id="studioView" hidden>
   <section class="panel">
     <h2>Create speech from any text</h2>
-    <p class="hint">Use it for any text, not only onboarding videos. Type or paste text, pick a voice, and generate an audio file. Download it, or save it straight to your Desktop. Everything runs offline on this computer.</p>
+    <p class="hint">Use it for any text, not only onboarding videos. Type or paste text, pick a voice, and generate an audio file. Download it as an MP3 file. Everything runs offline on this computer.</p>
     <div class="srow">
       <div class="field grow"><label for="sVoice">Voice</label><select id="sVoice"></select></div>
-      <div class="field"><label for="sFormat">File type</label><select id="sFormat"><option value="wav">WAV (best quality)</option><option value="mp3">MP3 (smaller)</option></select></div>
     </div>
     <label class="hint" for="sText">Text</label>
     <textarea id="sText" maxlength="5000" placeholder="Type or paste the text you want to hear..."></textarea>
     <div class="sfoot">
       <button class="btn primary" id="sGo" type="button">Generate speech</button>
       <a class="btn" id="sDownload" hidden>Download</a>
-      <button class="btn" id="sDesktop" type="button" hidden>Save to Desktop</button>
       <span class="counter" id="sCount">0 / 5000</span>
     </div>
     <audio class="player" id="sAudio" controls hidden></audio>
@@ -368,32 +365,26 @@ function bindSpeech(o) {
   let url = null;
   const q = (id) => document.getElementById(id);
   const say = (cls, t) => { q(o.note).className = cls; q(o.note).textContent = t || ''; };
-  const busy = (on, t) => { q(o.go).disabled = on; q(o.desktop).disabled = on; say('note', t); };
+  const busy = (on, t) => { q(o.go).disabled = on; say('note', t); };
   const args = () => ({ key: o.key(), text: q(o.text).value, lengthScale: $('#speed').value, format: o.format() });
   q(o.go).onclick = async () => {
     if (!q(o.text).value.trim()) { say('err', 'Type some text first.'); return; }
     const v = S.voices.find((x) => x.key === o.key());
     busy(true, v && !v.installed ? 'Downloading the voice (' + v.sizeMb + ' MB), one time, then generating...' : 'Generating speech...');
     try {
-      const r = await api('/api/tts', args()); const name = r.headers.get('X-File-Name') || 'speech.wav'; const blob = await r.blob();
+      const r = await api('/api/tts', args()); const name = r.headers.get('X-File-Name') || 'speech.mp3'; const blob = await r.blob();
       if (url) URL.revokeObjectURL(url);
       url = URL.createObjectURL(blob);
       const a = q(o.audio); a.src = url; a.hidden = false; a.play().catch(() => {});
       const d = q(o.download); d.href = url; d.download = name; d.textContent = 'Download ' + name.split('.').pop().toUpperCase(); d.hidden = false;
-      q(o.desktop).hidden = false;
       if (v) { v.installed = true; drawStats(); }
-      busy(false, 'Ready: press play, download it, or save it to your Desktop.');
+      busy(false, 'Ready: press play or download the MP3.');
     } catch (e) { busy(false); say('err', 'Could not generate: ' + e.message); }
-  };
-  q(o.desktop).onclick = async () => {
-    busy(true, 'Saving to your Desktop...');
-    try { const r = await (await api('/api/save-desktop', args())).json(); busy(false); say('saved', 'Saved to ' + r.saved); }
-    catch (e) { busy(false); say('err', 'Could not save: ' + e.message); }
   };
 }
 $('#sText').addEventListener('input', () => { $('#sCount').textContent = $('#sText').value.length + ' / 5000'; });
-bindSpeech({ go: 'sGo', download: 'sDownload', desktop: 'sDesktop', audio: 'sAudio', note: 'sNote', text: 'sText', key: () => $('#sVoice').value, format: () => $('#sFormat').value });
-bindSpeech({ go: 'pGo', download: 'pDownload', desktop: 'pDesktop', audio: 'pAudio', note: 'pNote', text: 'text', key: () => cur.voice || (S.current && S.current.voice) || 'en_US-ryan-high', format: () => 'wav' });
+bindSpeech({ go: 'sGo', download: 'sDownload', audio: 'sAudio', note: 'sNote', text: 'sText', key: () => $('#sVoice').value, format: () => 'mp3' });
+bindSpeech({ go: 'pGo', download: 'pDownload', audio: 'pAudio', note: 'pNote', text: 'text', key: () => cur.voice || (S.current && S.current.voice) || 'en_US-ryan-high', format: () => 'mp3' });
 function showTab(name) {
   const studio = name === 'studio';
   $('#voicesView').hidden = studio; $('#voicesControls').hidden = studio; $('#studioView').hidden = !studio;
