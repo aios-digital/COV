@@ -124,6 +124,16 @@ a.btn{text-decoration:none;color:var(--ink)}
 .chip.comm{background:var(--brand-soft);border-color:transparent;color:var(--brand);font-weight:600}
 .vnote{font-size:12.5px;color:var(--mute);margin:0}
 .vnote a{color:var(--brand)}
+.namerow{display:flex;align-items:center;gap:8px}
+.tip{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:800;font-size:13px;line-height:1;cursor:help;display:inline-grid;place-items:center;padding:0;flex:none}
+.tip:hover,.tip[aria-expanded="true"]{background:var(--brand);color:var(--brand-ink)}
+.tipbox{display:none;position:absolute;left:12px;right:12px;top:68px;z-index:30;background:var(--surface);color:var(--ink);border:1px solid var(--brand);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:12px 14px;font-size:13px;line-height:1.45;text-transform:none;font-weight:400}
+.tipbox b{display:block;margin-bottom:4px;font-size:13.5px}
+.tipbox ol,.tipbox ul{margin:4px 0 6px;padding-left:18px}
+.tipbox li{margin:2px 0}
+.tipbox a{color:var(--brand)}
+.card:has(.tipwrap:hover),.card:has(.tipwrap:focus-within),.card:has(.tipwrap.open){z-index:25}
+.tipwrap:hover .tipbox,.tipwrap:focus-within .tipbox,.tipwrap.open .tipbox{display:block}
 [hidden]{display:none !important}
 
 /* footer bar */
@@ -277,6 +287,38 @@ const ARABIC_SAMPLE = 'مرحباً بكم. سنأخذكم في جولة قصي�
 /* An Arabic voice cannot read English text: use its Arabic sample sentence unless the text already contains Arabic */
 function textFor(v, text) { return v.family === 'ar' && !ARABIC.test(text) ? { text: v.sampleText || ARABIC_SAMPLE, swapped: true } : { text, swapped: false }; }
 
+const QUALITY_TIP = {
+  high: 'High quality: the most natural sound. Larger download and a little slower to generate.',
+  medium: 'Medium quality: a good balance of natural sound, size and speed.',
+  low: 'Low quality: small and fast, but sounds less natural.',
+  x_low: 'Extra low quality: the smallest and fastest, clearly synthetic.',
+  community: 'Community voice: made by someone outside the official Piper project, so quality is not rated. Listen before you choose.',
+};
+/* The (!) tooltip: how to use this voice, what language it needs, size and licence */
+function tipWrap(v) {
+  const wrap = el('span', 'tipwrap');
+  const btn = el('button', 'tip', '!'); btn.type = 'button'; btn.id = 'tipbtn-' + v.key;
+  btn.setAttribute('aria-label', 'How to use the voice ' + pretty(v.name)); btn.setAttribute('aria-describedby', 'tip-' + v.key); btn.setAttribute('aria-expanded', 'false');
+  const box = el('div', 'tipbox'); box.id = 'tip-' + v.key; box.setAttribute('role', 'tooltip');
+  box.appendChild(el('b', '', 'How to use this voice'));
+  const steps = el('ol');
+  ['Press Sample to hear the voice.', 'Press Try with my script to hear your own text with it.', 'Press Use this voice to make it your narrator for the video.'].forEach((t) => steps.appendChild(el('li', '', t)));
+  box.appendChild(steps);
+  const facts = el('ul');
+  facts.appendChild(el('li', '', v.family === 'en' ? 'Reads English text.' : 'Reads ' + v.languageName + ' only: type your text in ' + v.languageName + '. English text will sound wrong.' + (v.family === 'ar' ? ' If your text is not Arabic, Try with my script reads an Arabic sample sentence instead.' : '')));
+  facts.appendChild(el('li', '', QUALITY_TIP[v.quality] || ''));
+  if (v.speakers > 1) facts.appendChild(el('li', '', 'This model has ' + v.speakers + ' speakers. The first speaker is used.'));
+  facts.appendChild(el('li', '', v.installed ? 'Already installed on this computer.' : 'Downloads once (' + v.sizeMb + ' MB) the first time you try it or choose it.'));
+  facts.appendChild(el('li', '', v.community ? (v.commercial ? 'Commercial use is allowed (' + v.license + ').' : 'Non-commercial use only (' + v.license + '). Do not use it for customer videos.') : 'Licence: see the voice model card.'));
+  box.appendChild(facts);
+  if (v.source) { const a = el('a', '', v.community ? 'Open the source page' : 'Open the model card'); a.href = v.source; a.target = '_blank'; a.rel = 'noopener noreferrer'; box.appendChild(a); }
+  btn.addEventListener('click', (e) => { e.stopPropagation(); const open = !wrap.classList.contains('open'); document.querySelectorAll('.tipwrap.open').forEach((w) => { w.classList.remove('open'); w.querySelector('.tip').setAttribute('aria-expanded', 'false'); }); wrap.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open)); });
+  wrap.append(btn, box);
+  return wrap;
+}
+document.addEventListener('click', (e) => { if (!e.target.closest('.tipwrap')) document.querySelectorAll('.tipwrap.open').forEach((w) => { w.classList.remove('open'); w.querySelector('.tip').setAttribute('aria-expanded', 'false'); }); });
+document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (document.activeElement && document.activeElement.closest && document.activeElement.closest('.tipwrap')) document.activeElement.blur(); document.querySelectorAll('.tipwrap.open').forEach((w) => { w.classList.remove('open'); w.querySelector('.tip').setAttribute('aria-expanded', 'false'); }); });
+
 function localeStats() {
   const map = new Map();
   for (const v of visible()) { const m = map.get(v.language) || { code: v.language, name: v.languageName, country: v.country, family: v.family, n: 0 }; m.n++; map.set(v.language, m); }
@@ -326,7 +368,7 @@ function card(v) {
   if (v.key === cur.voice) c.appendChild(el('span', 'ribbon', 'Current narrator'));
   const head = el('div', 'head'); const av = el('div', 'avatar', v.name.slice(0, 1).toUpperCase());
   const h = hue(v.key); av.style.background = 'linear-gradient(135deg,hsl(' + h + ' 70% 48%),hsl(' + ((h + 40) % 360) + ' 70% 40%))';
-  const t = el('div'); t.appendChild(el('h3', '', pretty(v.name)));
+  const t = el('div'); const row = el('div', 'namerow'); row.append(el('h3', '', pretty(v.name)), tipWrap(v)); t.appendChild(row);
   t.appendChild(el('div', 'loc', v.languageName + (v.country ? ' (' + v.country + ')' : '')));
   head.append(av, t);
   const chips = el('div', 'chips');

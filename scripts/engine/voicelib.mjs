@@ -54,6 +54,7 @@ export function describeVoice(key, v) {
     key, name: v.name, quality: v.quality, speakers: v.num_speakers,
     language: v.language.code, family: v.language.family, languageName: v.language.name_english, country: v.language.country_english,
     sizeMb: Math.round(onnx[1].size_bytes / 1048576), sampleUrl: `${HF}/${dir}/samples/speaker_0.mp3`,
+    source: `https://huggingface.co/rhasspy/piper-voices/tree/main/${dir}`,
     installed: fs.existsSync(voiceFile(key)), community: false,
   };
 }
