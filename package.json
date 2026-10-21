@@ -1,10 +1,12 @@
 {
   "name": "customer-onboarding-with-tts",
   "version": "1.0.0",
-  "description": "Agent skill: scan a web module, plan and approve, then record a narrated, subtitled customer onboarding video with offline text-to-speech.",
+  "description": "Create customer onboarding videos automatically: scan a web app, approve a plan, then record a narrated, subtitled product walkthrough with free offline text-to-speech. Agent skill for Claude Code and Codex.",
   "license": "MIT",
   "private": false,
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "voices": "node scripts/engine/voices.mjs",
@@ -12,5 +14,27 @@
     "check": "node --check scripts/setup.mjs && node --check scripts/engine/env.mjs && node --check scripts/engine/voicelib.mjs && node --check scripts/engine/planlib.mjs && node --check scripts/engine/login.mjs && node --check scripts/engine/scan.mjs && node --check scripts/engine/voices.mjs && node --check scripts/engine/tts.mjs && node --check scripts/engine/plan.mjs && node --check scripts/engine/prepare.mjs && node --check scripts/engine/record.mjs && node --check scripts/engine/mux.mjs",
     "test": "node --test test/plan.test.mjs"
   },
-  "keywords": ["onboarding", "tts", "piper", "playwright", "ffmpeg", "claude-code", "codex", "agent-skill"]
+  "keywords": [
+    "customer-onboarding",
+    "onboarding-video",
+    "product-walkthrough",
+    "software-demo",
+    "tutorial-video",
+    "text-to-speech",
+    "voiceover",
+    "subtitles",
+    "saas",
+    "video-automation",
+    "piper",
+    "playwright",
+    "ffmpeg",
+    "claude-code",
+    "codex",
+    "agent-skill"
+  ],
+  "homepage": "https://github.com/aios-digital/COV#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aios-digital/COV.git"
+  }
 }

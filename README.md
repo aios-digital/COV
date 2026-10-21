@@ -1,9 +1,11 @@
-# Customer Onboarding with TTS
+# Customer Onboarding with TTS: create customer onboarding videos automatically
 
-An agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills) with two uses:
+**The fastest way to turn a web app into a customer onboarding video.** Point it at your SaaS, CRM, ERP or any web module and it scans the product, writes a recording plan for you to approve, then records a 1080p walkthrough in a real browser with a natural, free, offline AI voiceover and burned-in subtitles. No video editor, no screen recorder, no microphone, no API keys, no per-minute fees.
 
-- **Customer onboarding videos:** turns a web app or module into a customer-ready, narrated, subtitled walkthrough video.
-- **Plain text to speech:** type or paste any text and get an MP3 file, offline and free, from the dashboard or the command line.
+Built as an agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills). It also works on its own as a free **offline text-to-speech** tool that exports MP3.
+
+- **Customer onboarding videos, product walkthroughs and software tutorials:** a narrated, subtitled MP4 (plus `.srt` and `.vtt` files) for every module of your product, ready for your help center, onboarding emails or training courses.
+- **Plain text to speech:** type or paste any text and download an MP3, from the dashboard or the command line.
 
 ![Customer Onboarding with TTS: scan a web app, approve the plan, and get a narrated, subtitled onboarding video](docs/images/social-preview.png)
 
@@ -14,6 +16,17 @@ Full installation steps for Claude Code and Codex are in **[INSTALL.md](INSTALL.
   <img alt="The voice picker dashboard: 179 voices in 53 languages, with samples, licences and a (!) usage tooltip on every voice" src="docs/images/dashboard-light.png">
 </picture>
 
+
+## Why use it to create onboarding videos
+
+- **Nothing is recorded without your approval.** It scans the module first (read-only), then shows a plan: scenes, narration, and every record it will create. You approve before the first frame is captured.
+- **Natural voices, no cloud.** Pick from about 180 offline [Piper](https://github.com/rhasspy/piper) voices in many languages, including Arabic, in a built-in dashboard with samples, licence labels and dark/light mode.
+- **Always up to date.** Product changed? Re-run the same scenes and get a fresh video, instead of re-recording by hand.
+- **Looks professional.** A highlighted cursor, visible menu navigation, calm pacing, a complete ending and subtitles timed sentence by sentence.
+- **Safe by design.** Demo or test environments only, you sign in yourself (it never sees a password), no outbound emails, and test records are closed, never deleted.
+- **A built-in acceptance test.** If a scene cannot find its button, the recording fails loudly, so the video doubles as an end-to-end test of the module.
+
+**Use it for:** customer onboarding videos, SaaS product tours, software demo videos, user training and how-to videos, help-center tutorials, and feature release walkthroughs.
 
 ## How it works
 
@@ -180,6 +193,20 @@ Voices come from the [Piper voice catalog](https://huggingface.co/rhasspy/piper-
 picker streams the official sample for listening, and downloads a voice (60 to 120 MB, once) only when you try it or choose it. Each voice has
 its own licence in its model card: check it before publishing videos commercially. Write native narration for other languages; do not
 machine-translate blindly, and check right-to-left subtitle rendering.
+
+## FAQ
+
+**How do I create a customer onboarding video with this?** Install the skill, ask Claude Code or Codex to "record an onboarding video for the Invoices module of https://demo.mycompany.com", sign in when the browser window opens, choose a voice, approve the plan, and collect the MP4. The steps are in [INSTALL.md](INSTALL.md).
+
+**Is it free?** Yes. The tool is MIT licensed, and the voices, recorder and video tools run on your own computer. There are no API keys and no per-minute charges. Check each voice's licence if you publish commercially: the dashboard labels them.
+
+**Does it need an internet connection?** Only for the one-time download of the tools and voices, and to reach the web app you are recording. Text to speech and video building then run offline.
+
+**Which languages are supported?** English by default, plus every language in the Piper catalog (including Arabic). Write native narration for the language you choose. Subtitles are generated from your narration text; right-to-left subtitle rendering has not been verified yet.
+
+**Can I use it without a video, only for text to speech?** Yes: open the dashboard's **Text to speech** tab or run `node scripts/engine/tts.mjs --text="..."` to get an MP3.
+
+**Which agents does it work with?** Claude Code and Codex, and any agent that loads `SKILL.md` skills. You can also run every step yourself with the Node scripts.
 
 ## Troubleshooting
 
