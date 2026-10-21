@@ -117,6 +117,13 @@ textarea{width:100%;min-height:72px;resize:vertical;margin-top:4px}
 .err{margin-top:10px;font-size:13.5px;color:var(--warn);font-weight:600}
 #sText{min-height:200px;font-size:16px;line-height:1.55}
 a.btn{text-decoration:none;color:var(--ink)}
+.check{display:flex;gap:8px;align-items:center;min-height:40px;font-size:13.5px;color:var(--mute);cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--brand)}
+.chip.lic-ok{background:var(--ok-soft);border-color:transparent;color:var(--ok);font-weight:600}
+.chip.lic-nc{background:var(--warn-soft);border-color:transparent;color:var(--warn);font-weight:600}
+.chip.comm{background:var(--brand-soft);border-color:transparent;color:var(--brand);font-weight:600}
+.vnote{font-size:12.5px;color:var(--mute);margin:0}
+.vnote a{color:var(--brand)}
 [hidden]{display:none !important}
 
 /* footer bar */
@@ -153,6 +160,7 @@ input[type=range]{width:170px;accent-color:var(--brand)}
       <div class="stat"><b id="stVoices">0</b><span>voices</span></div>
       <div class="stat"><b id="stLangs">0</b><span>languages</span></div>
       <div class="stat"><b id="stLocales">0</b><span>regional variants</span></div>
+      <div class="stat"><b id="stCommunity">0</b><span>community voices</span></div>
       <div class="stat"><b id="stInstalled">0</b><span>installed on this computer</span></div>
     </div>
 
@@ -176,6 +184,7 @@ input[type=range]{width:170px;accent-color:var(--brand)}
     <div class="field"><label for="q">Quality</label>
       <select id="q"><option value="">Any quality</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="x_low">Extra low</option></select>
     </div>
+    <label class="check" title="Some community voices are licensed for non-commercial use only. Customer onboarding videos are usually commercial use."><input type="checkbox" id="nc"> Include non-commercial voices</label>
     <div class="field grow"><label for="find">Search</label><input id="find" type="search" placeholder="Search by voice name" autocomplete="off"></div>
   </div>
 </div>
@@ -185,7 +194,7 @@ input[type=range]{width:170px;accent-color:var(--brand)}
   <section class="panel">
     <h2><label for="text">Type text, play it and download it</label></h2>
     <p class="hint">Starts with the first lines of your narration. Edit it to anything you like. The buttons on each voice card read this text with that voice; the buttons below use your current narrator and give you an MP3.</p>
-    <textarea id="text" maxlength="600"></textarea>
+    <textarea id="text" maxlength="600" dir="auto"></textarea>
     <div class="sfoot">
       <button class="btn primary" id="pGo" type="button">Play with current narrator</button>
       <a class="btn" id="pDownload" hidden>Download</a>
@@ -205,7 +214,7 @@ input[type=range]{width:170px;accent-color:var(--brand)}
       <div class="field grow"><label for="sVoice">Voice</label><select id="sVoice"></select></div>
     </div>
     <label class="hint" for="sText">Text</label>
-    <textarea id="sText" maxlength="5000" placeholder="Type or paste the text you want to hear..."></textarea>
+    <textarea id="sText" maxlength="5000" dir="auto" placeholder="Type or paste the text you want to hear..."></textarea>
     <div class="sfoot">
       <button class="btn primary" id="sGo" type="button">Generate speech</button>
       <a class="btn" id="sDownload" hidden>Download</a>
@@ -262,21 +271,29 @@ function play(src, card, btn, label) {
 function playIcon() { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('width', '14'); s.setAttribute('height', '14'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'currentColor'); const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', 'M7 4.5v15l13-7.5z'); s.appendChild(p); return s; }
 function button(label, cls, withIcon) { const b = el('button', 'btn ' + (cls || '')); b.type = 'button'; if (withIcon) b.appendChild(playIcon()); b.appendChild(document.createTextNode(label)); return b; }
 
+const visible = () => S.voices.filter((v) => v.commercial !== false || $('#nc').checked);
+const ARABIC = /[\u0600-\u06FF]/;
+const ARABIC_SAMPLE = 'مرحباً بكم. سنأخذكم في جولة قصيرة لنتعرف معاً على كل ما تحتاجونه.';
+/* An Arabic voice cannot read English text: use its Arabic sample sentence unless the text already contains Arabic */
+function textFor(v, text) { return v.family === 'ar' && !ARABIC.test(text) ? { text: v.sampleText || ARABIC_SAMPLE, swapped: true } : { text, swapped: false }; }
+
 function localeStats() {
   const map = new Map();
-  for (const v of S.voices) { const m = map.get(v.language) || { code: v.language, name: v.languageName, country: v.country, family: v.family, n: 0 }; m.n++; map.set(v.language, m); }
+  for (const v of visible()) { const m = map.get(v.language) || { code: v.language, name: v.languageName, country: v.country, family: v.family, n: 0 }; m.n++; map.set(v.language, m); }
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name) || a.country.localeCompare(b.country));
 }
 
 function drawStats() {
   const locales = localeStats();
-  $('#stVoices').textContent = S.voices.length;
-  $('#stLangs').textContent = new Set(S.voices.map((v) => v.family)).size;
+  const vis = visible();
+  $('#stVoices').textContent = vis.length;
+  $('#stCommunity').textContent = vis.filter((v) => v.community).length;
+  $('#stLangs').textContent = new Set(vis.map((v) => v.family)).size;
   $('#stLocales').textContent = locales.length;
-  $('#stInstalled').textContent = S.voices.filter((v) => v.installed).length;
+  $('#stInstalled').textContent = vis.filter((v) => v.installed).length;
   const sel = $('#lang'); const keep = sel.value;
   sel.textContent = '';
-  const all = el('option', '', 'All languages (' + S.voices.length + ' voices)'); all.value = ''; sel.appendChild(all);
+  const all = el('option', '', 'All languages (' + vis.length + ' voices)'); all.value = ''; sel.appendChild(all);
   const families = new Map();
   for (const l of locales) { if (!families.has(l.family)) families.set(l.family, []); families.get(l.family).push(l); }
   for (const [, list] of families) {
@@ -291,13 +308,13 @@ function drawStats() {
 function filtered() {
   const L = $('#lang').value, Q = $('#q').value, F = $('#find').value.trim().toLowerCase();
   const order = { high: 0, medium: 1, low: 2, x_low: 3 };
-  return S.voices.filter((v) => (!L || v.language === L) && (!Q || v.quality === Q) && (!F || v.name.includes(F) || v.key.toLowerCase().includes(F)))
-    .sort((a, b) => ((b.key === cur.voice) - (a.key === cur.voice)) || (order[a.quality] - order[b.quality]) || a.name.localeCompare(b.name));
+  return visible().filter((v) => (!L || v.language === L) && (!Q || v.quality === Q) && (!F || v.name.includes(F) || v.key.toLowerCase().includes(F)))
+    .sort((a, b) => ((b.key === cur.voice) - (a.key === cur.voice)) || ((order[a.quality] ?? 1.5) - (order[b.quality] ?? 1.5)) || a.name.localeCompare(b.name));
 }
 
 function drawGrid() {
   const list = filtered(); const L = $('#lang').value;
-  const total = L ? S.voices.filter((v) => v.language === L).length : S.voices.length;
+  const total = L ? visible().filter((v) => v.language === L).length : visible().length;
   $('#langCount').textContent = list.length === total ? plural(total, 'voice') : list.length + ' of ' + plural(total, 'voice');
   const g = $('#grid'); g.textContent = '';
   if (!list.length) { g.appendChild(el('div', 'empty', 'No voices match these filters.')); return; }
@@ -313,18 +330,27 @@ function card(v) {
   t.appendChild(el('div', 'loc', v.languageName + (v.country ? ' (' + v.country + ')' : '')));
   head.append(av, t);
   const chips = el('div', 'chips');
-  chips.appendChild(el('span', 'chip q-' + v.quality, v.quality.replace('_', ' ')));
+  chips.appendChild(el('span', 'chip ' + (v.community ? 'comm' : 'q-' + v.quality), v.community ? 'community' : v.quality.replace('_', ' ')));
+  if (v.community) chips.appendChild(el('span', 'chip ' + (v.commercial ? 'lic-ok' : 'lic-nc'), (v.commercial ? 'Commercial use OK: ' : 'Non-commercial only: ') + v.license));
   chips.appendChild(el('span', 'chip', v.speakers > 1 ? v.speakers + ' speakers' : '1 speaker'));
   chips.appendChild(el('span', 'chip', v.sizeMb + ' MB'));
   chips.appendChild(el('span', 'chip' + (v.installed ? ' inst' : ''), v.installed ? 'installed' : 'downloads on first use'));
+  const vnote = v.community ? el('p', 'vnote', v.notes + ' ') : null;
+  if (vnote) { const a = el('a', '', 'Source'); a.href = v.source; a.target = '_blank'; a.rel = 'noopener noreferrer'; vnote.appendChild(a); }
   const note = el('div', 'note'); const eq = el('span', 'eq'); eq.append(el('i'), el('i'), el('i'));
   const actions = el('div', 'actions');
   const b1 = button('Sample', '', true), b2 = button('Try with my script', '', true), b3 = button(v.key === cur.voice ? 'Selected' : 'Use this voice', v.key === cur.voice ? 'done' : 'primary');
   if (v.key === cur.voice) b3.disabled = true;
-  b1.onclick = () => { b1.disabled = true; b1.lastChild.textContent = 'Loading...'; play('/api/sample?key=' + encodeURIComponent(v.key), c, b1, 'Sample'); };
+  b1.onclick = async () => {
+    b1.disabled = true;
+    if (v.sampleUrl) { b1.lastChild.textContent = 'Loading...'; play('/api/sample?key=' + encodeURIComponent(v.key), c, b1, 'Sample'); return; }
+    note.textContent = v.installed ? 'Generating the sample...' : 'Downloading the voice (' + v.sizeMb + ' MB), one time...';
+    try { const r = await api('/api/preview', { key: v.key, text: v.sampleText, lengthScale: $('#speed').value }); const u = URL.createObjectURL(await r.blob()); v.installed = true; note.textContent = ''; drawStats(); await play(u, c, b1, 'Sample'); }
+    catch (e) { note.textContent = 'Could not play the sample: ' + e.message; b1.disabled = false; }
+  };
   b2.onclick = async () => {
     b2.disabled = true; note.textContent = v.installed ? 'Generating...' : 'Downloading the voice (' + v.sizeMb + ' MB), one time...';
-    try { const r = await api('/api/preview', { key: v.key, text: $('#text').value, lengthScale: $('#speed').value }); const u = URL.createObjectURL(await r.blob()); v.installed = true; note.textContent = ''; drawStats(); await play(u, c, b2, 'Try with my script'); }
+    try { const t = textFor(v, $('#text').value); const r = await api('/api/preview', { key: v.key, text: t.text, lengthScale: $('#speed').value }); const u = URL.createObjectURL(await r.blob()); v.installed = true; note.textContent = t.swapped ? 'Your text is not Arabic, so the Arabic sample sentence was read. Type Arabic text to hear your own words.' : ''; drawStats(); await play(u, c, b2, 'Try with my script'); }
     catch (e) { note.textContent = 'Could not preview: ' + e.message; b2.disabled = false; }
   };
   b3.onclick = async () => {
@@ -334,7 +360,7 @@ function card(v) {
   };
   actions.append(b1, b2, b3);
   const foot = el('div', 'note'); foot.append(eq, note);
-  c.append(head, chips, actions, foot);
+  c.append(head, chips); if (vnote) c.appendChild(vnote); c.append(actions, foot);
   return c;
 }
 
@@ -354,8 +380,8 @@ function fillStudioVoices() {
   sel.textContent = '';
   const inst = el('optgroup'); inst.label = 'Installed on this computer';
   const rest = el('optgroup'); rest.label = 'Other voices (downloaded the first time you use them)';
-  const label = (v) => pretty(v.name) + ' - ' + v.languageName + (v.country ? ' (' + v.country + ')' : '') + ' - ' + v.quality + (v.installed ? '' : ' - ' + v.sizeMb + ' MB');
-  const sorted = [...S.voices].sort((a, b) => a.languageName.localeCompare(b.languageName) || a.name.localeCompare(b.name));
+  const label = (v) => pretty(v.name) + ' - ' + v.languageName + (v.country ? ' (' + v.country + ')' : '') + ' - ' + v.quality + (v.commercial === false ? ' - non-commercial only' : '') + (v.installed ? '' : ' - ' + v.sizeMb + ' MB');
+  const sorted = visible().sort((a, b) => a.languageName.localeCompare(b.languageName) || a.name.localeCompare(b.name));
   for (const v of sorted) { const o = el('option', '', label(v)); o.value = v.key; (v.installed ? inst : rest).appendChild(o); }
   if (inst.children.length) sel.appendChild(inst);
   sel.appendChild(rest);
@@ -406,6 +432,7 @@ async function init() {
   if (!S.piperReady) msg('Piper is not installed yet: run  node scripts/setup.mjs  to enable "Try with my script". Samples still work.');
   drawChosen(); drawGrid();
 }
+$('#nc').onchange = () => { drawStats(); drawGrid(); };
 $('#lang').onchange = $('#q').onchange = drawGrid; $('#find').oninput = drawGrid;
 $('#speed').oninput = (e) => { $('#speedv').textContent = e.target.value; };
 $('#gap').oninput = (e) => { $('#gapv').textContent = e.target.value + ' ms'; };

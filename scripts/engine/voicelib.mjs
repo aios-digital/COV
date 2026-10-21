@@ -8,7 +8,8 @@ import { pipeline } from 'node:stream/promises';
 import { spawnSync } from 'node:child_process';
 import { toolsDir, voiceFile, piperExe } from './env.mjs';
 
-export const HF = 'https://huggingface.co/rhasspy/piper-voices/resolve/main';
+export const HF_ROOT = 'https://huggingface.co';
+export const HF = `${HF_ROOT}/rhasspy/piper-voices/resolve/main`;
 const CATALOG_TTL_MS = 24 * 3600 * 1000;
 
 export async function download(url, dest, { expectMd5 } = {}) {
@@ -32,6 +33,19 @@ export async function loadCatalog() {
   return JSON.parse(fs.readFileSync(cache, 'utf8'));
 }
 
+/** Extra voices that are not in the official Piper catalog (see community-voices.json: each has a source repo and a licence). */
+export function loadCommunity() {
+  try { return JSON.parse(fs.readFileSync(new URL('./community-voices.json', import.meta.url), 'utf8')); } catch { return []; }
+}
+export function describeCommunity(c) {
+  return {
+    key: c.key, name: c.name, quality: 'community', speakers: 1, language: c.language, family: c.language.split('_')[0],
+    languageName: c.languageName, country: c.country, sizeMb: c.sizeMb, sampleUrl: null, sampleText: c.sampleText,
+    community: true, license: c.license, commercial: c.commercial, notes: c.notes, source: `https://huggingface.co/${c.repo}`,
+    installed: fs.existsSync(voiceFile(c.key)),
+  };
+}
+
 /** Catalog entry reduced to what the picker needs. */
 export function describeVoice(key, v) {
   const onnx = Object.entries(v.files).find(([f]) => f.endsWith('.onnx'));
@@ -40,13 +54,19 @@ export function describeVoice(key, v) {
     key, name: v.name, quality: v.quality, speakers: v.num_speakers,
     language: v.language.code, family: v.language.family, languageName: v.language.name_english, country: v.language.country_english,
     sizeMb: Math.round(onnx[1].size_bytes / 1048576), sampleUrl: `${HF}/${dir}/samples/speaker_0.mp3`,
-    installed: fs.existsSync(voiceFile(key)),
+    installed: fs.existsSync(voiceFile(key)), community: false,
   };
 }
 
 /** Downloads a voice model + config into the tools folder (checksum verified). Idempotent. */
 export async function ensureVoice(key) {
   if (fs.existsSync(voiceFile(key)) && fs.existsSync(`${voiceFile(key)}.json`)) return voiceFile(key);
+  const community = loadCommunity().find((c) => c.key === key);
+  if (community) {
+    await download(`${HF_ROOT}/${community.repo}/resolve/main/${community.onnx}`, voiceFile(key));
+    await download(`${HF_ROOT}/${community.repo}/resolve/main/${community.json}`, `${voiceFile(key)}.json`);
+    return voiceFile(key);
+  }
   const catalog = await loadCatalog();
   const v = catalog[key];
   if (!v) throw new Error(`Unknown Piper voice '${key}'. Run: node scripts/engine/voices.mjs to browse the catalog.`);

@@ -12,7 +12,7 @@ import { spawn } from 'node:child_process';
 import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parseArgs, toolsDir, IS_WIN, resolveVoice, DEFAULT_VOICE, ffmpegBin } from './env.mjs';
-import { loadCatalog, describeVoice, ensureVoice, synth, download } from './voicelib.mjs';
+import { loadCatalog, describeVoice, loadCommunity, describeCommunity, ensureVoice, synth, download } from './voicelib.mjs';
 
 const args = parseArgs(process.argv);
 let project = null; let sampleText = 'Hi, and welcome. In this short video I will show you how your team uses this module day to day. Take your time, and do not worry, we will go step by step.';
@@ -28,7 +28,7 @@ const current = () => { try { return JSON.parse(fs.readFileSync(saveTarget, 'utf
 
 const PAGE = fs.readFileSync(new URL('./voices.html', import.meta.url), 'utf8');
 const catalog = await loadCatalog();
-const voices = Object.entries(catalog).map(([k, v]) => describeVoice(k, v)).sort((a, b) => a.language.localeCompare(b.language) || a.name.localeCompare(b.name) || a.quality.localeCompare(b.quality));
+const voices = [...Object.entries(catalog).map(([k, v]) => describeVoice(k, v)), ...loadCommunity().map(describeCommunity)].sort((a, b) => a.language.localeCompare(b.language) || a.name.localeCompare(b.name) || a.quality.localeCompare(b.quality));
 const cacheDir = path.join(toolsDir(), 'voice-samples'); fs.mkdirSync(cacheDir, { recursive: true });
 let lastHit = Date.now();
 

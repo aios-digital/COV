@@ -1,0 +1,47 @@
+[
+  {
+    "key": "ar_AE-emirati_female-community",
+    "name": "emirati female",
+    "language": "ar_AE",
+    "languageName": "Arabic",
+    "country": "United Arab Emirates",
+    "repo": "vadimbelsky/arabic-emirati-female-piper",
+    "onnx": "arabic-emirati-female-model.onnx",
+    "json": "arabic-emirati-female-model.onnx.json",
+    "sizeMb": 61,
+    "license": "MIT",
+    "commercial": true,
+    "notes": "Female voice, Emirati dialect. Community model, not part of the official Piper catalog.",
+    "sampleText": "مرحباً بكم. سنأخذكم في جولة قصيرة لنتعرف معاً على كل ما تحتاجونه."
+  },
+  {
+    "key": "ar_SA-miro_v2-community",
+    "name": "miro v2",
+    "language": "ar_SA",
+    "languageName": "Arabic",
+    "country": "Saudi Arabia",
+    "repo": "OpenVoiceOS/phoonnx_ar_miro_espeak_V2",
+    "onnx": "miro_ar.onnx",
+    "json": "miro_ar.piper.json",
+    "sizeMb": 61,
+    "license": "CC BY-NC-ND 4.0",
+    "commercial": false,
+    "notes": "Male voice, Modern Standard Arabic (OpenVoiceOS). Licence allows non-commercial use only.",
+    "sampleText": "مرحباً بكم. سنأخذكم في جولة قصيرة لنتعرف معاً على كل ما تحتاجونه."
+  },
+  {
+    "key": "ar_SA-dii-community",
+    "name": "dii",
+    "language": "ar_SA",
+    "languageName": "Arabic",
+    "country": "Saudi Arabia",
+    "repo": "OpenVoiceOS/phoonnx_ar_dii_espeak",
+    "onnx": "dii_ar.onnx",
+    "json": "dii_ar.piper.json",
+    "sizeMb": 61,
+    "license": "CC BY-NC-ND 4.0",
+    "commercial": false,
+    "notes": "Modern Standard Arabic (OpenVoiceOS). Licence allows non-commercial use only.",
+    "sampleText": "مرحباً بكم. سنأخذكم في جولة قصيرة لنتعرف معاً على كل ما تحتاجونه."
+  }
+]

@@ -134,6 +134,8 @@ A full worked example (a 14-scene support-module walkthrough, including rehearsa
 
 ## Voices and languages
 
+Arabic has its own guide: [references/arabic-voices.md](references/arabic-voices.md) lists every Arabic voice found (with licences) and which ones work here. Community voices outside the official catalog live in `scripts/engine/community-voices.json`; those licensed for non-commercial use only are hidden until you tick "Include non-commercial voices".
+
 Voices come from the [Piper voice catalog](https://huggingface.co/rhasspy/piper-voices) (about 180 voices in many languages). The
 picker streams the official sample for listening, and downloads a voice (60 to 120 MB, once) only when you try it or choose it. Each voice has
 its own licence in its model card: check it before publishing videos commercially. Write native narration for other languages; do not
