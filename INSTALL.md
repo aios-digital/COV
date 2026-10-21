@@ -20,7 +20,7 @@ On macOS install ffmpeg with `brew install ffmpeg` first (the skill reuses it). 
 
 ## 2. Put the skill where your agent finds it
 
-Replace `<repo-url>` with this repository's address.
+The repository is `https://github.com/aios-digital/COV.git`. The last argument of each command is the folder name the agent expects; keep it as shown.
 
 ### Claude Code
 
@@ -28,17 +28,17 @@ User-wide (every project):
 
 ```bash
 # macOS / Linux / Git Bash
-git clone <repo-url> ~/.claude/skills/customer-onboarding-with-tts
+git clone https://github.com/aios-digital/COV.git ~/.claude/skills/customer-onboarding-with-tts
 ```
 ```powershell
 # Windows PowerShell
-git clone <repo-url> "$env:USERPROFILE\.claude\skills\customer-onboarding-with-tts"
+git clone https://github.com/aios-digital/COV.git "$env:USERPROFILE\.claude\skills\customer-onboarding-with-tts"
 ```
 
 Only for one project (commit it so your team gets it too):
 
 ```bash
-git clone <repo-url> .claude/skills/customer-onboarding-with-tts
+git clone https://github.com/aios-digital/COV.git .claude/skills/customer-onboarding-with-tts
 rm -rf .claude/skills/customer-onboarding-with-tts/.git   # so the project does not contain a nested repository
 ```
 
@@ -47,10 +47,10 @@ Start a new Claude Code session, then type `/customer-onboarding-with-tts` or ju
 ### Codex
 
 ```bash
-git clone <repo-url> ~/.codex/skills/customer-onboarding-with-tts
+git clone https://github.com/aios-digital/COV.git ~/.codex/skills/customer-onboarding-with-tts
 ```
 ```powershell
-git clone <repo-url> "$env:USERPROFILE\.codex\skills\customer-onboarding-with-tts"
+git clone https://github.com/aios-digital/COV.git "$env:USERPROFILE\.codex\skills\customer-onboarding-with-tts"
 ```
 
 Restart Codex and ask it to use the `customer-onboarding-with-tts` skill. If your Codex version looks for skills somewhere else, use the folder named in its documentation: the skill needs nothing except that the folder contains `SKILL.md`.

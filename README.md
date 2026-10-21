@@ -46,13 +46,13 @@ Clone this repository into your agent's skills folder.
 
 **Claude Code**
 ```bash
-git clone https://github.com/<you>/customer-onboarding-with-tts ~/.claude/skills/customer-onboarding-with-tts
+git clone https://github.com/aios-digital/COV.git ~/.claude/skills/customer-onboarding-with-tts
 ```
 (Windows PowerShell: `git clone ... "$env:USERPROFILE\.claude\skills\customer-onboarding-with-tts"`.) To share it with a team, clone it into `.claude/skills/` inside the project instead.
 
 **Codex**
 ```bash
-git clone https://github.com/<you>/customer-onboarding-with-tts ~/.codex/skills/customer-onboarding-with-tts
+git clone https://github.com/aios-digital/COV.git ~/.codex/skills/customer-onboarding-with-tts
 ```
 (Codex reads user skills from `~/.codex/skills`. Restart Codex if it does not list the skill; check your Codex version's documentation if the folder differs.)
 
