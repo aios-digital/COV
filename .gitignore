@@ -1,0 +1,14 @@
+node_modules/
+# Never commit recordings, audio, the signed-in browser profile, or scan output from a real site
+video/
+audio/
+screens/
+profile/
+scan/
+rehearsal/
+voice.json
+plan.approval.json
+*.webm
+*.mp4
+*.wav
+.env
