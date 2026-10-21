@@ -1,6 +1,6 @@
 ---
 name: customer-onboarding-with-tts
-description: Create a narrated, subtitled customer onboarding or training video of any web app or module. The skill first scans the module and writes a recording plan for the user to approve, lets the user pick the narrator voice in a local dashboard, then records the walkthrough with a real browser (Playwright), an offline human-sounding text-to-speech voice (Piper), and burned-in subtitles (ffmpeg). Use when asked to record an onboarding, tutorial, demo, training or "how it works" video, to re-record or extend one, or to turn a product module into a customer-ready walkthrough. Produces a 1920x1080 MP4 (captioned and clean), SRT/VTT files and a short report.
+description: Create a narrated, subtitled customer onboarding or training video of any web app or module. The skill first scans the module and writes a recording plan for the user to approve, lets the user pick the narrator voice in a local dashboard, then records the walkthrough with a real browser (Playwright), an offline human-sounding text-to-speech voice (Piper), and burned-in subtitles (ffmpeg). Also works as a plain offline text-to-speech tool (dashboard tab or command line) that produces WAV or MP3 files. Use when asked to record an onboarding, tutorial, demo, training or "how it works" video, to re-record or extend one, to turn a product module into a customer-ready walkthrough, or to convert text to speech. Produces a 1920x1080 MP4 (captioned and clean), SRT/VTT files and a short report, or an audio file.
 ---
 
 # Customer onboarding with TTS
@@ -12,9 +12,13 @@ and timed to the voice, and the run doubles as an end-to-end acceptance test of 
 In this file `<skill>` is the folder that contains this SKILL.md (for example `~/.claude/skills/customer-onboarding-with-tts` or
 `~/.codex/skills/customer-onboarding-with-tts`). All commands are Node scripts and work on Windows, macOS and Linux. Use `--config=<project>/walkthrough.config.mjs` on every engine script.
 
-## The gates (never skip)
+## Plain text to speech (no video)
+When the user only wants audio from text: run `node <skill>/scripts/setup.mjs` once, then either `node <skill>/scripts/engine/tts.mjs --text="..." [--voice=] [--speed=] [--format=wav|mp3] [--out=<file or folder>]` (saves to the Desktop when `--out` is omitted),
+or open the dashboard with `node <skill>/scripts/engine/voices.mjs` (run it in the background) and tell the user to use its **Text to speech** tab: they can generate, download, or save to the Desktop themselves.
+
+## The gates for onboarding videos (never skip)
 1. **Scan, then plan, then approval, then record.** Never start recording until the user has read `plan.md` and said yes. `record.mjs` refuses to run without a matching approval.
-2. **The user chooses the voice** in the voice picker dashboard before the audio is generated.
+2. **The user chooses the voice** in the voice picker dashboard (dark/light, voices per language, samples, and a Text to speech tab) before the audio is generated.
 3. **Demo or test environments only.** Never record production or real customer data. Follow the project's own rules (AGENTS.md, CLAUDE.md, security notes) about which environments may be touched.
 4. **The user signs in; you never handle passwords.** `login.mjs` opens a visible window with a dedicated profile folder.
 5. **Nothing may reach a real person.** Internal notes only, reserved addresses (`example.invalid`), no emails, SMS or messages. Never hard-delete: close or archive test records and report strays.
@@ -54,5 +58,5 @@ Human, calm pacing; the navigation is visible and highlighted as each screen is 
 | Strange state from a failed take | Clean up in the scene's first lines (stop timers, close modals); close stray records |
 
 ## Files
-`scripts/setup.mjs` | `scripts/engine/{env,voicelib,planlib}.mjs` (helpers) | `scripts/engine/{login,scan,voices,plan,prepare,record,mux}.mjs` |
+`scripts/setup.mjs` | `scripts/engine/{env,voicelib,planlib}.mjs` (helpers) | `scripts/engine/{login,scan,voices,tts,plan,prepare,record,mux}.mjs` | `INSTALL.md` |
 `templates/walkthrough.config.mjs` | `examples/crm-support-module.config.mjs` (+ `.notes.md`) | `references/{narration-style,adapting-to-other-software,gotchas,checklist}.md`.

@@ -8,7 +8,8 @@
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "voices": "node scripts/engine/voices.mjs",
-    "check": "node --check scripts/setup.mjs && node --check scripts/engine/env.mjs && node --check scripts/engine/voicelib.mjs && node --check scripts/engine/planlib.mjs && node --check scripts/engine/login.mjs && node --check scripts/engine/scan.mjs && node --check scripts/engine/voices.mjs && node --check scripts/engine/plan.mjs && node --check scripts/engine/prepare.mjs && node --check scripts/engine/record.mjs && node --check scripts/engine/mux.mjs",
+    "tts": "node scripts/engine/tts.mjs",
+    "check": "node --check scripts/setup.mjs && node --check scripts/engine/env.mjs && node --check scripts/engine/voicelib.mjs && node --check scripts/engine/planlib.mjs && node --check scripts/engine/login.mjs && node --check scripts/engine/scan.mjs && node --check scripts/engine/voices.mjs && node --check scripts/engine/tts.mjs && node --check scripts/engine/plan.mjs && node --check scripts/engine/prepare.mjs && node --check scripts/engine/record.mjs && node --check scripts/engine/mux.mjs",
     "test": "node --test test/plan.test.mjs"
   },
   "keywords": ["onboarding", "tts", "piper", "playwright", "ffmpeg", "claude-code", "codex", "agent-skill"]

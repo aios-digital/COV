@@ -1,7 +1,13 @@
 # Customer Onboarding with TTS
 
-An agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills) that turns a web app or module into a
-customer-ready onboarding video:
+An agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills) with two uses:
+
+- **Customer onboarding videos:** turns a web app or module into a customer-ready, narrated, subtitled walkthrough video.
+- **Plain text to speech:** type or paste any text and get a WAV or MP3 file, offline and free, from the dashboard or the command line.
+
+Full installation steps for Claude Code and Codex are in **[INSTALL.md](INSTALL.md)**.
+
+How the onboarding video works:
 
 1. **Scans the module first** (read-only) and writes a **recording plan** that you read and approve before anything is recorded.
 2. Opens a **voice picker dashboard** so you choose the narrator by listening, and test it on your own script.
@@ -34,6 +40,8 @@ The same run doubles as an end-to-end acceptance test of the module: scenes that
 
 ## Install
 
+The short version is below; the complete guide with requirements, updating and troubleshooting is **[INSTALL.md](INSTALL.md)**.
+
 Clone this repository into your agent's skills folder.
 
 **Claude Code**
@@ -55,6 +63,17 @@ Then install the tools once:
 node ~/.claude/skills/customer-onboarding-with-tts/scripts/setup.mjs
 ```
 (Or just ask your agent; the skill runs it for you.)
+
+## Text to speech without an onboarding video
+
+```bash
+node scripts/engine/voices.mjs        # dashboard: pick a voice, then use the "Text to speech" tab
+node scripts/engine/tts.mjs --text="Hello, this is a test." --format=mp3 --out=./hello.mp3
+```
+
+The dashboard has dark and light modes, shows how many voices exist per language, plays a sample of every voice, and lets you type any text
+(up to 5000 characters), generate it, then **download** the file or **save it to your Desktop**. The command line version needs no dashboard
+(`--file=script.txt`, `--voice=`, `--speed=`, `--format=wav|mp3`, `--out=`; it saves to your Desktop when `--out` is omitted).
 
 ## Use it with your agent
 
