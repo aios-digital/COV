@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="t d">
+  <title id="t">How customer-onboarding-with-tts works</title>
+  <desc id="d">Ten steps from installing the tools to a captioned onboarding video, with a plan approval gate before anything is recorded.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.12"/></filter>
+    <style>
+      text{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;fill:#0f172a}
+      .h{font-size:26px;font-weight:700}
+      .sub{font-size:15px;fill:#475569}
+      .lane{font-size:13px;font-weight:700;letter-spacing:.08em;fill:#64748b}
+      .box{fill:#fff;stroke-width:2;filter:url(#shadow)}
+      .auto{stroke:#2f6bff}.you{stroke:#d97706}.gate{stroke:#059669;fill:#ecfdf5}
+      .t{font-size:17px;font-weight:700}.s{font-size:13.5px;fill:#475569}
+      .num{fill:#2f6bff}.numy{fill:#d97706}.numg{fill:#059669}
+      .n{font-size:15px;font-weight:700;fill:#fff;text-anchor:middle}
+      .line{stroke:#64748b;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+      .tag{font-size:12px;font-weight:700;fill:#b45309}
+      .tagg{font-size:12px;font-weight:700;fill:#047857}
+    </style>
+  </defs>
+  <rect width="1200" height="640" rx="18" fill="#f8fafc"/>
+  <text x="40" y="52" class="h">Customer onboarding with TTS: from a web module to a captioned video</text>
+  <text x="40" y="78" class="sub">Nothing is recorded until you have read and approved the plan.</text>
+
+  <text x="40" y="122" class="lane">PREPARE</text>
+  <!-- row 1 -->
+  <g>
+    <rect class="box auto" x="40"  y="136" width="250" height="104" rx="14"/><circle class="num" cx="62" cy="158" r="14"/><text class="n" x="62" y="163">1</text>
+    <text class="t" x="86" y="164">Install the tools</text><text class="s" x="62" y="192">ffmpeg, Piper voice, Playwright</text><text class="s" x="62" y="212">once per computer</text>
+
+    <rect class="box you" x="335" y="136" width="250" height="104" rx="14"/><circle class="numy" cx="357" cy="158" r="14"/><text class="n" x="357" y="163">2</text>
+    <text class="t" x="381" y="164">You sign in</text><text class="s" x="357" y="192">in a browser window you see;</text><text class="s" x="357" y="212">no password ever shared</text>
+
+    <rect class="box auto" x="630" y="136" width="250" height="104" rx="14"/><circle class="num" cx="652" cy="158" r="14"/><text class="n" x="652" y="163">3</text>
+    <text class="t" x="676" y="164">Scan the module</text><text class="s" x="652" y="192">read-only: pages, tabs, buttons,</text><text class="s" x="652" y="212">form fields, screenshots</text>
+
+    <rect class="box you" x="925" y="136" width="235" height="104" rx="14"/><circle class="numy" cx="947" cy="158" r="14"/><text class="n" x="947" y="163">4</text>
+    <text class="t" x="971" y="164">You pick the voice</text><text class="s" x="947" y="192">dashboard: samples, speed,</text><text class="s" x="947" y="212">licences, dark / light</text>
+  </g>
+  <path class="line" d="M290 188H333"/><path class="line" d="M585 188H628"/><path class="line" d="M880 188H923"/>
+  <path class="line" d="M1042 240V268H165V296"/>
+
+  <text x="40" y="282" class="lane">RECORD</text>
+  <!-- row 2 -->
+  <g>
+    <rect class="box auto" x="40" y="300" width="190" height="112" rx="14"/><circle class="num" cx="62" cy="322" r="14"/><text class="n" x="62" y="327">5</text>
+    <text class="t" x="86" y="328">Write the scenes</text><text class="s" x="62" y="356">narration, captions,</text><text class="s" x="62" y="376">what happens on screen</text>
+
+    <rect class="box gate" x="275" y="300" width="230" height="112" rx="14" stroke-width="3"/><circle class="numg" cx="297" cy="322" r="14"/><text class="n" x="297" y="327">6</text>
+    <text class="t" x="321" y="328">plan.md + approval</text><text class="s" x="297" y="356">scenes, narration, data it</text><text class="s" x="297" y="376">will create. You say yes.</text>
+    <text class="tagg" x="297" y="398">GATE: no recording until approved</text>
+
+    <rect class="box auto" x="550" y="300" width="190" height="112" rx="14"/><circle class="num" cx="572" cy="322" r="14"/><text class="n" x="572" y="327">7</text>
+    <text class="t" x="596" y="328">Make the voice</text><text class="s" x="572" y="356">offline text to speech,</text><text class="s" x="572" y="376">sentence by sentence</text>
+
+    <rect class="box auto" x="785" y="300" width="175" height="112" rx="14"/><circle class="num" cx="807" cy="322" r="14"/><text class="n" x="807" y="327">8</text>
+    <text class="t" x="831" y="328">Rehearse</text><text class="s" x="807" y="356">runs the scenes,</text><text class="s" x="807" y="376">changes no data</text>
+
+    <rect class="box auto" x="1005" y="300" width="155" height="112" rx="14"/><circle class="num" cx="1027" cy="322" r="14"/><text class="n" x="1027" y="327">9</text>
+    <text class="t" x="1051" y="328">Final take</text><text class="s" x="1027" y="356">real browser,</text><text class="s" x="1027" y="376">demo records only</text>
+  </g>
+  <path class="line" d="M230 356H273"/><path class="line" d="M505 356H548"/><path class="line" d="M740 356H783"/><path class="line" d="M960 356H1003"/>
+  <path class="line" d="M1082 412V450H600V476"/>
+
+  <!-- build -->
+  <rect class="box auto" x="430" y="480" width="340" height="104" rx="14"/><circle class="num" cx="452" cy="502" r="14"/><text class="n" x="452" y="507">10</text>
+  <text class="t" x="476" y="508">Build the video</text><text class="s" x="452" y="536">cuts slow waits, adds the voice,</text><text class="s" x="452" y="556">burns in English subtitles</text>
+  <path class="line" d="M770 532H840"/>
+
+  <!-- outputs -->
+  <rect x="845" y="470" width="315" height="124" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"/>
+  <text x="865" y="498" class="t">You get</text>
+  <text x="865" y="524" class="s">captioned MP4 (share this) and clean MP4</text>
+  <text x="865" y="545" class="s">.srt and .vtt subtitle files</text>
+  <text x="865" y="566" class="s">step screenshots and a short test report</text>
+
+  <!-- legend -->
+  <rect x="40" y="478" width="16" height="16" rx="4" fill="#fff" stroke="#2f6bff" stroke-width="2"/><text x="64" y="491" class="s">automatic</text>
+  <rect x="40" y="504" width="16" height="16" rx="4" fill="#fff" stroke="#d97706" stroke-width="2"/><text x="64" y="517" class="s">needs you</text>
+  <rect x="40" y="530" width="16" height="16" rx="4" fill="#ecfdf5" stroke="#059669" stroke-width="2.5"/><text x="64" y="543" class="s">approval gate</text>
+  <text x="40" y="580" class="s">Also: a Text to speech tab for plain MP3 files.</text>
+</svg>

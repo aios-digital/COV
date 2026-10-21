@@ -10,21 +10,24 @@
   color-scheme:light;
   --bg:#f3f5f9;--surface:#ffffff;--surface-2:#f7f9fc;--ink:#0f1b2d;--mute:#5a6a7e;--line:#e0e6ee;
   --brand:#2f6bff;--brand-ink:#ffffff;--brand-soft:#e8efff;--ok:#10795a;--ok-soft:#dff5ec;--warn:#9a5b06;--warn-soft:#fdf0d8;--info:#2457c9;--info-soft:#e6eeff;
-  --shadow:0 1px 2px rgba(15,27,45,.06),0 6px 20px rgba(15,27,45,.06);--ring:rgba(47,107,255,.45)
+  --shadow:0 1px 2px rgba(15,27,45,.06),0 6px 20px rgba(15,27,45,.06);--ring:rgba(47,107,255,.45);
+  --glow:0 0 0 transparent;--glow-text:0 0 0 transparent;--glow-line:0 0 0 transparent
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#0a0f16;--surface:#121a25;--surface-2:#0f1620;--ink:#e8eef6;--mute:#97a6b9;--line:#223043;
-    --brand:#6f9dff;--brand-ink:#0a0f16;--brand-soft:#17233a;--ok:#4cd9a0;--ok-soft:#10261f;--warn:#f0b45a;--warn-soft:#2c2111;--info:#8db3ff;--info-soft:#16233b;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--ring:rgba(111,157,255,.55)
+    --bg:#0b0813;--surface:#140f20;--surface-2:#100c1b;--ink:#f1eaff;--mute:#a89cc4;--line:#33265a;
+    --brand:#b794ff;--brand-ink:#12071f;--brand-soft:#241748;--ok:#4cd9a0;--ok-soft:#10261f;--warn:#f0b45a;--warn-soft:#2c2111;--info:#d3c2ff;--info-soft:#271a4a;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);--ring:rgba(183,148,255,.65);
+    --glow:0 0 8px rgba(183,148,255,.7),0 0 22px rgba(150,100,255,.4);--glow-text:0 0 8px rgba(183,148,255,.85),0 0 18px rgba(150,100,255,.45);--glow-line:0 0 10px rgba(183,148,255,.55)
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#0a0f16;--surface:#121a25;--surface-2:#0f1620;--ink:#e8eef6;--mute:#97a6b9;--line:#223043;
-  --brand:#6f9dff;--brand-ink:#0a0f16;--brand-soft:#17233a;--ok:#4cd9a0;--ok-soft:#10261f;--warn:#f0b45a;--warn-soft:#2c2111;--info:#8db3ff;--info-soft:#16233b;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--ring:rgba(111,157,255,.55)
+  --bg:#0b0813;--surface:#140f20;--surface-2:#100c1b;--ink:#f1eaff;--mute:#a89cc4;--line:#33265a;
+  --brand:#b794ff;--brand-ink:#12071f;--brand-soft:#241748;--ok:#4cd9a0;--ok-soft:#10261f;--warn:#f0b45a;--warn-soft:#2c2111;--info:#d3c2ff;--info-soft:#271a4a;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);--ring:rgba(183,148,255,.65);
+  --glow:0 0 8px rgba(183,148,255,.7),0 0 22px rgba(150,100,255,.4);--glow-text:0 0 8px rgba(183,148,255,.85),0 0 18px rgba(150,100,255,.45);--glow-line:0 0 10px rgba(183,148,255,.55)
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -76,7 +79,7 @@ textarea{width:100%;min-height:72px;resize:vertical;margin-top:4px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding-bottom:110px}
 .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:12px;transition:transform .15s,border-color .15s}
 .card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--brand) 45%,var(--line))}
-.card.sel{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok) inset,var(--shadow)}
+.card.sel,.card.sel:hover{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok) inset,var(--shadow)}
 .head{display:flex;gap:12px;align-items:center}
 .avatar{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:17px;flex:none;position:relative}
 .card h3{margin:0;font-size:17px;text-transform:capitalize;line-height:1.2}
@@ -134,6 +137,21 @@ a.btn{text-decoration:none;color:var(--ink)}
 .tipbox a{color:var(--brand)}
 .card:has(.tipwrap:hover),.card:has(.tipwrap:focus-within),.card:has(.tipwrap.open){z-index:25}
 .tipwrap:hover .tipbox,.tipwrap:focus-within .tipbox,.tipwrap.open .tipbox{display:block}
+h1{text-shadow:var(--glow-text)}
+.stat b{text-shadow:var(--glow-text)}
+.logo{box-shadow:var(--glow)}
+.tab[aria-selected="true"]{text-shadow:var(--glow-text);box-shadow:0 8px 12px -9px var(--brand)}
+.btn.primary{box-shadow:var(--glow)}
+.btn:hover{box-shadow:var(--glow-line)}
+.count,.chip.comm{text-shadow:var(--glow-text)}
+.tip{box-shadow:var(--glow-line);text-shadow:var(--glow-text)}
+.tipbox{box-shadow:0 10px 30px rgba(0,0,0,.35),var(--glow-line)}
+.tipbox a,.vnote a,.panel code{text-shadow:var(--glow-text)}
+.card:hover{box-shadow:var(--shadow),var(--glow-line)}
+.tabbar{box-shadow:0 1px 14px -6px var(--brand)}
+.controls{box-shadow:0 1px 12px -8px var(--brand)}
+.theme button[aria-pressed="true"]{box-shadow:0 1px 3px rgba(0,0,0,.15),var(--glow-line)}
+input[type=range]{filter:drop-shadow(0 0 4px var(--brand))}
 [hidden]{display:none !important}
 
 /* footer bar */
@@ -170,7 +188,7 @@ input[type=range]{width:170px;accent-color:var(--brand)}
       <div class="stat"><b id="stVoices">0</b><span>voices</span></div>
       <div class="stat"><b id="stLangs">0</b><span>languages</span></div>
       <div class="stat"><b id="stLocales">0</b><span>regional variants</span></div>
-      <div class="stat"><b id="stCommunity">0</b><span>community voices</span></div>
+      <div class="stat"><b id="stCommunity">0</b><span id="stCommunityLbl">community voices</span></div>
       <div class="stat"><b id="stInstalled">0</b><span>installed on this computer</span></div>
     </div>
 
@@ -281,6 +299,7 @@ function play(src, card, btn, label) {
 function playIcon() { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('width', '14'); s.setAttribute('height', '14'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'currentColor'); const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', 'M7 4.5v15l13-7.5z'); s.appendChild(p); return s; }
 function button(label, cls, withIcon) { const b = el('button', 'btn ' + (cls || '')); b.type = 'button'; if (withIcon) b.appendChild(playIcon()); b.appendChild(document.createTextNode(label)); return b; }
 
+const inLang = (v, L) => !L || (L.startsWith('fam:') ? v.family === L.slice(4) : v.language === L);
 const visible = () => S.voices.filter((v) => v.commercial !== false || $('#nc').checked);
 const ARABIC = /[\u0600-\u06FF]/;
 const ARABIC_SAMPLE = 'مرحباً بكم. سنأخذكم في جولة قصيرة لنتعرف معاً على كل ما تحتاجونه.';
@@ -329,7 +348,8 @@ function drawStats() {
   const locales = localeStats();
   const vis = visible();
   $('#stVoices').textContent = vis.length;
-  $('#stCommunity').textContent = vis.filter((v) => v.community).length;
+  const nComm = vis.filter((v) => v.community).length;
+  $('#stCommunity').textContent = nComm; $('#stCommunityLbl').textContent = nComm === 1 ? 'community voice' : 'community voices';
   $('#stLangs').textContent = new Set(vis.map((v) => v.family)).size;
   $('#stLocales').textContent = locales.length;
   $('#stInstalled').textContent = vis.filter((v) => v.installed).length;
@@ -340,7 +360,11 @@ function drawStats() {
   for (const l of locales) { if (!families.has(l.family)) families.set(l.family, []); families.get(l.family).push(l); }
   for (const [, list] of families) {
     const group = list.length > 1 ? el('optgroup') : null;
-    if (group) group.label = list[0].name + ' (' + list.reduce((n, l) => n + l.n, 0) + ' voices)';
+    if (group) {
+      const total = list.reduce((n, l) => n + l.n, 0);
+      group.label = list[0].name + ' (' + total + ' voices)';
+      const allFam = el('option', '', 'All ' + list[0].name + ' - ' + plural(total, 'voice')); allFam.value = 'fam:' + list[0].family; group.appendChild(allFam);
+    }
     for (const l of list) { const o = el('option', '', l.name + (l.country ? ' (' + l.country + ')' : '') + ' - ' + plural(l.n, 'voice')); o.value = l.code; (group || sel).appendChild(o); }
     if (group) sel.appendChild(group);
   }
@@ -350,13 +374,13 @@ function drawStats() {
 function filtered() {
   const L = $('#lang').value, Q = $('#q').value, F = $('#find').value.trim().toLowerCase();
   const order = { high: 0, medium: 1, low: 2, x_low: 3 };
-  return visible().filter((v) => (!L || v.language === L) && (!Q || v.quality === Q) && (!F || v.name.includes(F) || v.key.toLowerCase().includes(F)))
+  return visible().filter((v) => inLang(v, L) && (!Q || v.quality === Q) && (!F || v.name.includes(F) || v.key.toLowerCase().includes(F)))
     .sort((a, b) => ((b.key === cur.voice) - (a.key === cur.voice)) || ((order[a.quality] ?? 1.5) - (order[b.quality] ?? 1.5)) || a.name.localeCompare(b.name));
 }
 
 function drawGrid() {
   const list = filtered(); const L = $('#lang').value;
-  const total = L ? visible().filter((v) => v.language === L).length : visible().length;
+  const total = L ? visible().filter((v) => inLang(v, L)).length : visible().length;
   $('#langCount').textContent = list.length === total ? plural(total, 'voice') : list.length + ' of ' + plural(total, 'voice');
   const g = $('#grid'); g.textContent = '';
   if (!list.length) { g.appendChild(el('div', 'empty', 'No voices match these filters.')); return; }

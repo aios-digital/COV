@@ -7,7 +7,20 @@ An agent skill for **Claude Code** and **Codex** (and any agent that reads `SKIL
 
 Full installation steps for Claude Code and Codex are in **[INSTALL.md](INSTALL.md)**.
 
-How the onboarding video works:
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/dashboard-dark.png">
+  <img alt="The voice picker dashboard: 179 voices in 53 languages, with samples, licences and a (!) usage tooltip on every voice" src="docs/images/dashboard-light.png">
+</picture>
+
+
+## How it works
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/workflow-dark.svg">
+  <img alt="Ten steps from installing the tools to a captioned onboarding video, with a plan approval gate before anything is recorded" src="docs/images/workflow-light.svg">
+</picture>
+
+In words:
 
 1. **Scans the module first** (read-only) and writes a **recording plan** that you read and approve before anything is recorded.
 2. Opens a **voice picker dashboard** so you choose the narrator by listening, and test it on your own script.
@@ -16,6 +29,31 @@ How the onboarding video works:
 5. Burns in **English subtitles** timed sentence by sentence, and writes `.srt` / `.vtt` files.
 
 The same run doubles as an end-to-end acceptance test of the module: scenes that cannot find their buttons fail loudly.
+
+## Screenshots
+
+The dashboard follows your system theme, or use the Light / Auto / Dark switch (the screenshots below switch with your GitHub theme).
+
+**Voice tooltips.** The **(!)** next to every voice explains how to use it, which language it reads, its quality, size and licence.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/voice-tooltip-dark.png">
+  <img alt="The (!) tooltip on a voice card with usage instructions" src="docs/images/voice-tooltip-light.png">
+</picture>
+
+**Arabic voices and licences.** Community voices show their licence. Voices licensed for non-commercial use only stay hidden until you tick "Include non-commercial voices".
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/arabic-voices-dark.png">
+  <img alt="Arabic voices with licence badges" src="docs/images/arabic-voices-light.png">
+</picture>
+
+**Text to speech.** Type any text, generate it and download an MP3.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/text-to-speech-dark.png">
+  <img alt="The Text to speech tab with a generated MP3 and a Download MP3 button" src="docs/images/text-to-speech-light.png">
+</picture>
 
 ## What you get
 
