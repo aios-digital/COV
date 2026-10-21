@@ -16,7 +16,7 @@ const { ffmpeg } = ffmpegBin();
 const name = config.name || 'walkthrough';
 const tl = JSON.parse(fs.readFileSync(path.join(dirs.video, 'timeline.json'), 'utf8'));
 const partsAll = JSON.parse(fs.readFileSync(path.join(dirs.audio, 'parts.json'), 'utf8'));
-const OFFSET = 400; // the recording starts slightly before the timeline clock
+const OFFSET = tl.offset ?? 400; // web recordings start slightly before the timeline clock; desktop captures start on it
 const HOLD = 3; // seconds the last frame is held after the video ends
 const cuts = [...(tl.cuts || [])].sort((a, b) => a.from - b.from);
 const removedBefore = (v) => cuts.reduce((n, c) => n + (v >= c.to ? c.to - c.from : 0), 0);
@@ -30,7 +30,9 @@ const clips = [
 ];
 
 // ---- audio + video graph
-const inputs = ['-i', path.join(dirs.video, `${name}-silent.webm`)];
+const silent = ['webm', 'mp4'].map((e) => path.join(dirs.video, `${name}-silent.${e}`)).find((p) => fs.existsSync(p));
+if (!silent) throw new Error(`No ${name}-silent.webm or .mp4 in ${dirs.video}: run the recorder with --final first.`);
+const inputs = ['-i', silent];
 const audio = []; const labels = [];
 clips.forEach((c, i) => {
   inputs.push('-i', path.join(dirs.audio, `${c.id}.wav`));
@@ -39,14 +41,22 @@ clips.forEach((c, i) => {
 });
 audio.push(`${labels.join('')}amix=inputs=${clips.length}:normalize=0,volume=0.85,aresample=48000[aout]`);
 const video = [];
+// A desktop capture is small (one window): scale it up and centre it on a dark 1920x1080 canvas, leaving room below for the subtitles.
+let SRC = '[0:v]';
+if (tl.desktop) {
+  if (cuts.length) throw new Error('Desktop captures have no cuts.');
+  const W = Math.min(1500, Math.round(tl.desktop.width * 1.4)); const H = Math.round(W * tl.desktop.height / tl.desktop.width / 2) * 2;
+  video.push(`[0:v]scale=${W}:${H}:flags=lanczos,pad=1920:1080:${Math.round((1920 - W) / 2)}:${Math.max(20, Math.min(60, 1080 - H - 150))}:color=0x0b0813[vsrc]`);
+  SRC = '[vsrc]';
+}
 if (cuts.length) {
   const segs = [];
   for (let i = 0; i <= cuts.length; i++) {
     const a = i === 0 ? 0 : (cuts[i - 1].to + OFFSET) / 1000; const b = i === cuts.length ? null : (cuts[i].from + OFFSET) / 1000;
-    video.push(`[0:v]trim=start=${a}${b === null ? '' : `:end=${b}`},setpts=PTS-STARTPTS[v${i}]`); segs.push(`[v${i}]`);
+    video.push(`${SRC}trim=start=${a}${b === null ? '' : `:end=${b}`},setpts=PTS-STARTPTS[v${i}]`); segs.push(`[v${i}]`);
   }
   video.push(`${segs.join('')}concat=n=${segs.length}:v=1:a=0[vcut]`);
-} else video.push('[0:v]null[vcut]');
+} else video.push(`${SRC}null[vcut]`);
 video.push(`[vcut]trim=start=${TRIM / 1000},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${HOLD}[vhold]`);
 
 // ---- subtitle cues: one per sentence from the real timings, wrapped to at most two lines

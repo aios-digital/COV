@@ -29,8 +29,11 @@ function draft() {
   const L = [];
   L.push(`# Recording plan: ${config.name || 'walkthrough'}`, '', '**Status:** DRAFT (waiting for your approval)', '');
   L.push('## 1. Goal and audience', '', `- **Audience:** ${p.audience || '(describe who will watch: new customer, new agent, manager...)'}`, `- **Goal:** ${p.goal || '(what should the viewer be able to do afterwards?)'}`, `- **Story:** ${p.story || '(the one realistic record or task the video follows from start to finish)'}`, '');
-  L.push('## 2. Environment', '', `- **Target:** ${config.baseUrl} (start page: \`${config.startPath || '/'}\`)`, '- **Must be a demo or test environment with no real customer data.** Please confirm.', '- You sign in yourself in the browser window the skill opens. Passwords are never typed or stored by the skill.', '');
-  if (scan) {
+  if (config.desktop) L.push('## 2. Environment', '', `- **Target:** the Windows desktop application whose window title matches \`${config.desktop.title}\` (it is brought to the front for the recording, and put back as it was).`, '- **The mouse and keyboard are driven for the whole recording. Please do not touch them until it finishes.**', '- Only the application window is captured, not your whole screen.', '');
+  else L.push('## 2. Environment', '', `- **Target:** ${config.baseUrl} (start page: \`${config.startPath || '/'}\`)`, '- **Must be a demo or test environment with no real customer data.** Please confirm.', '- You sign in yourself in the browser window the skill opens. Passwords are never typed or stored by the skill.', '');
+  if (config.desktop) {
+    L.push('## 3. What was inspected', '', config.desktop.inspected || 'The application window was looked at before the scenes were written (read-only: looking and hovering, no clicks on actions).', '');
+  } else if (scan) {
     L.push('## 3. What the scan found', '', `Scanned ${scan.pages.length} page(s) of \`${scan.scope.join(', ')}\` (read-only: pages were opened, nothing was clicked or submitted).`, '');
     L.push('| Page | Title | Covered by a scene |', '| --- | --- | --- |');
     for (const pg of scan.pages) L.push(`| \`${cell(pg.path)}\` | ${cell(pg.title)} | ${covered.has(pg.path) ? 'yes' : 'not in this video'} |`);
@@ -44,7 +47,8 @@ function draft() {
   if (writes.length) writes.forEach((s) => L.push(`- **${s.caption || s.id}:** ${s.writes.join('; ')}`));
   else L.push('- Nothing. The scenes only look around.');
   L.push('', 'A rehearsal never saves anything. Only the final take (`--final`) writes the records above. Test records are closed or archived, never deleted.', '');
-  L.push('## 6. Safety checks', '', '- [ ] The target is a demo/test environment and the data on screen is not real.', '- [ ] No scene sends an email, SMS or message to a real person (internal notes only, `example.invalid` addresses).', '- [ ] Nothing in the plan deletes data permanently.', '- [ ] You will sign in yourself when asked.', '');
+  if (config.desktop) L.push('## 6. Safety checks', '', '- [ ] The application is in a state you are happy for me to look at (nothing unsaved, no work in progress).', '- [ ] No scene clicks anything that stops, deletes, sends or saves (the list in section 5 is complete).', '- [ ] You will not touch the mouse or keyboard while it records.', '');
+  else L.push('## 6. Safety checks', '', '- [ ] The target is a demo/test environment and the data on screen is not real.', '- [ ] No scene sends an email, SMS or message to a real person (internal notes only, `example.invalid` addresses).', '- [ ] Nothing in the plan deletes data permanently.', '- [ ] You will sign in yourself when asked.', '');
   L.push('## 7. Voice and outputs', '', `- **Voice:** \`${voice}\` at speed factor ${lengthScale} (change it with the voice picker: \`node scripts/engine/voices.mjs\`).`, '- **Outputs** (in the project folder, outside git): captioned MP4 (English subtitles burned in), clean MP4, `.srt` and `.vtt`, step screenshots, and a short report.', '');
   L.push('## 8. Approval', '', 'Reply **approve** to start (rehearsal first, then the real take), or tell me what to change. If the scenes change later, this plan must be approved again.', '');
   if (missingDoes.length) L.push(`<!-- scenes without a does description: ${missingDoes.join(', ')} -->`);

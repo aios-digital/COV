@@ -12,6 +12,12 @@
 - `-shortest` cuts the closing narration if the video is shorter. Keep recording 3.5 s after the last scene, hold the final frame 3 s, and do not use `-shortest`.
 - Trim the silent page-load at the start; keep a 0.6 s lead-in. Cut recorded server waits (`h.slowWait`).
 
+**Desktop applications (record-desktop.mjs, Windows)**
+- Tray applications may "hide" by parking their window at a huge negative x (for example -10000) while it still reports as visible. Showing it from code does not stick: the application moves it back within a second. Ask the user to open it from the tray icon, then confirm its window rectangle is on screen before recording.
+- Capture the window with the DWM frame bounds (`DwmGetWindowAttribute` 9), not `GetWindowRect`, which includes invisible resize borders that show a sliver of whatever is behind.
+- A click aimed at a window that has vanished lands on the desktop. Check that the window is on screen before every click and before every scene.
+- Moving the pointer over menu items is enough to show submenus; keep scenes to hover and Escape so nothing stops, deletes or saves.
+
 **Browser automation**
 - Wait for URL `commit`, not `load`, on busy pages; `networkidle` can take its whole timeout on pages that poll (cap it at about 3.5 s).
 - Hidden duplicates: a link visible in the page body can also match a hidden sidebar link and make "is the menu open" checks lie. Scope to the sidebar.

@@ -16,6 +16,12 @@ In this file `<skill>` is the folder that contains this SKILL.md (for example `~
 When the user only wants audio from text: run `node <skill>/scripts/setup.mjs` once, then either `node <skill>/scripts/engine/tts.mjs --text="..." [--voice=] [--speed=] [--format=mp3|wav] [--out=<file or folder>]` (MP3 by default; saved in the current folder when `--out` is omitted),
 or open the dashboard with `node <skill>/scripts/engine/voices.mjs` (run it in the background) and tell the user to use its **Text to speech** tab: they can generate, play and download the MP3 themselves.
 
+## Windows desktop applications (not only web apps)
+For a desktop program (for example a local dev tool), use `record-desktop.mjs` instead of `record.mjs` (Windows only). It captures just the application window with ffmpeg, drives the mouse and keyboard from the scene scripts, and feeds the same `prepare`, `plan` and `mux` steps. The config has `desktop: { title: '<regex of the window title>' }`; scene coordinates are relative to the window's top-left corner. See `examples/laragon-desktop.config.mjs`.
+- "Scan" a desktop app by looking at it: open its menus by hovering and take a screenshot, never click actions. Put what you saw in `desktop.inspected` so the plan shows it.
+- The user must open the application themselves (for example from its tray icon) and leave the window on screen: some tray apps park a hidden window off screen and move it back within a second when software shows it. The recorder checks the window before every click and stops if it disappears.
+- Tell the user to keep their hands off the mouse and keyboard while it records. Never script a click on Stop, Exit, Delete or Save unless the approved plan lists it.
+
 ## The gates for onboarding videos (never skip)
 1. **Scan, then plan, then approval, then record.** Never start recording until the user has read `plan.md` and said yes. `record.mjs` refuses to run without a matching approval.
 2. **The user chooses the voice** in the voice picker dashboard (dark/light, voices per language, samples, and a Text to speech tab) before the audio is generated.
@@ -58,5 +64,5 @@ Human, calm pacing; the navigation is visible and highlighted as each screen is 
 | Strange state from a failed take | Clean up in the scene's first lines (stop timers, close modals); close stray records |
 
 ## Files
-`scripts/setup.mjs` | `scripts/engine/{env,voicelib,planlib}.mjs` (helpers) | `scripts/engine/{login,scan,voices,tts,plan,prepare,record,mux}.mjs` | `INSTALL.md` |
+`scripts/setup.mjs` | `scripts/engine/{env,voicelib,planlib}.mjs` (helpers) | `scripts/engine/{login,scan,voices,tts,plan,prepare,record,record-desktop,mux}.mjs` (+ `desktop-input.ps1`) | `INSTALL.md` |
 `templates/walkthrough.config.mjs` | `examples/crm-support-module.config.mjs` (+ `.notes.md`) | `references/{narration-style,adapting-to-other-software,gotchas,checklist}.md`.

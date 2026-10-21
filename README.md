@@ -204,6 +204,8 @@ machine-translate blindly, and check right-to-left subtitle rendering.
 
 **Which languages are supported?** English by default, plus every language in the Piper catalog (including Arabic). Write native narration for the language you choose. Subtitles are generated from your narration text; right-to-left subtitle rendering has not been verified yet.
 
+**Does it work for desktop applications?** Yes on Windows: `record-desktop.mjs` records one application window and drives it with the mouse, then builds the same captioned video. See `examples/laragon-desktop.config.mjs`, a one minute tour of the Laragon desktop app.
+
 **Can I use it without a video, only for text to speech?** Yes: open the dashboard's **Text to speech** tab or run `node scripts/engine/tts.mjs --text="..."` to get an MP3.
 
 **Which agents does it work with?** Claude Code and Codex, and any agent that loads `SKILL.md` skills. You can also run every step yourself with the Node scripts.
