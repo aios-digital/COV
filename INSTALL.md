@@ -100,7 +100,7 @@ node scripts/engine/voices.mjs
 
 **Text to speech on its own.** Open the dashboard (`voices.mjs`) and use the **Text to speech** tab to turn any text into an MP3 you can play and download. Or use the command line: `node scripts/engine/tts.mjs --text="..." --voice=en_US-ryan-high --out=./speech.mp3`.
 
-**Customer onboarding videos.** Ask your agent to record one. The agent scans the module, shows you a recording plan, waits for your approval, then records, narrates and adds subtitles. You sign in yourself; the skill never sees your password.
+**Customer onboarding videos and software tutorials, for web apps and Windows desktop software.** Ask your agent, for example "create a one minute tutorial for the Laragon desktop app" or "record an onboarding video for our CRM's Invoices module". The agent scans the module, shows you a recording plan, waits for your approval, then records, narrates and adds subtitles. You sign in yourself; the skill never sees your password.
 
 ## Updating
 

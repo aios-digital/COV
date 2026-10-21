@@ -1,10 +1,10 @@
 # Customer Onboarding with TTS: create customer onboarding videos automatically
 
-**The fastest way to turn a web app into a customer onboarding video.** Point it at your SaaS, CRM, ERP or any web module and it scans the product, writes a recording plan for you to approve, then records a 1080p walkthrough in a real browser with a natural, free, offline AI voiceover and burned-in subtitles. No video editor, no screen recorder, no microphone, no API keys, no per-minute fees.
+**The fastest way to turn software into a customer onboarding video or tutorial, whether it is a web app or a desktop program.** Point it at your SaaS, CRM, ERP or any web module, or at a Windows desktop application, and your AI agent inspects the product, writes a recording plan for you to approve, then records a 1080p walkthrough with a natural, free, offline AI voiceover and burned-in subtitles. No video editor, no screen recorder, no microphone, no API keys, no per-minute fees.
 
-Built as an agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills). It also works on its own as a free **offline text-to-speech** tool that exports MP3.
+Built as an agent skill for **Claude Code** and **Codex** (and any agent that reads `SKILL.md` skills): just ask your agent, for example *"create a one minute tutorial for the Laragon desktop app"* or *"record an onboarding video for the Invoices module of our CRM"*. It also works on its own as a free **offline text-to-speech** tool that exports MP3.
 
-- **Customer onboarding videos, product walkthroughs and software tutorials:** a narrated, subtitled MP4 (plus `.srt` and `.vtt` files) for every module of your product, ready for your help center, onboarding emails or training courses.
+- **Customer onboarding videos, product walkthroughs and software tutorials, for web apps and desktop software:** a narrated, subtitled MP4 (plus `.srt` and `.vtt` files) for every module or program, ready for your help center, onboarding emails or training courses.
 - **Plain text to speech:** type or paste any text and download an MP3, from the dashboard or the command line.
 
 ![Customer Onboarding with TTS: scan a web app, approve the plan, and get a narrated, subtitled onboarding video](docs/images/social-preview.png)
@@ -26,7 +26,18 @@ Full installation steps for Claude Code and Codex are in **[INSTALL.md](INSTALL.
 - **Safe by design.** Demo or test environments only, you sign in yourself (it never sees a password), no outbound emails, and test records are closed, never deleted.
 - **A built-in acceptance test.** If a scene cannot find its button, the recording fails loudly, so the video doubles as an end-to-end test of the module.
 
-**Use it for:** customer onboarding videos, SaaS product tours, software demo videos, user training and how-to videos, help-center tutorials, and feature release walkthroughs.
+**Use it for:** customer onboarding videos, SaaS product tours, desktop software tutorials, software demo videos, user training and how-to videos, help-center tutorials, and feature release walkthroughs.
+
+### Web apps and desktop software
+
+| | Web apps (CRM, ERP, SaaS, any website) | Desktop software (Windows) |
+| --- | --- | --- |
+| Recorder | `record.mjs`: a real Chrome browser driven by Playwright | `record-desktop.mjs`: captures one application window and drives it with the mouse and keyboard |
+| How the agent learns the product | `scan.mjs` reads pages, tabs, buttons and form fields | The agent looks at the window and its menus (hover only, no clicks on actions) |
+| Example | [examples/crm-support-module.config.mjs](examples/crm-support-module.config.mjs) | [examples/laragon-desktop.config.mjs](examples/laragon-desktop.config.mjs), a one minute tour of the Laragon app |
+| Same for both | Plan you approve first, offline AI voice, burned-in subtitles, MP4 + `.srt` + `.vtt` | |
+
+For desktop software, open the application yourself and leave its window on screen; the agent only films that window, never your whole screen. Desktop recording is Windows only for now; web recording works on Windows, macOS and Linux.
 
 ## How it works
 
@@ -39,7 +50,7 @@ In words:
 
 1. **Scans the module first** (read-only) and writes a **recording plan** that you read and approve before anything is recorded.
 2. Opens a **voice picker dashboard** so you choose the narrator by listening, and test it on your own script.
-3. Records the walkthrough in a **real browser** (Playwright): highlighted menu clicks, visible cursor, 1920x1080.
+3. Records the walkthrough in a **real browser** (Playwright) or, for desktop software, from the **application window**: highlighted menu clicks, visible cursor, 1920x1080.
 4. Narrates it with an **offline, human-sounding voice** ([Piper](https://github.com/rhasspy/piper)): no API keys, no cloud, no cost.
 5. Burns in **English subtitles** timed sentence by sentence, and writes `.srt` / `.vtt` files.
 
